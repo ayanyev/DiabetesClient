@@ -80,6 +80,23 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     + ServiceContract.OPTIONS_COLUMN_TIMESTAMP
                     + " INTEGER) ";
 
+    private static String CREATE_RELATIONS_DATA_TABLE =
+            "CREATE TABLE "
+                    + ServiceContract.RELATIONS_TABLE_NAME
+                    + " ("
+                    + ServiceContract.RELATIONS_COLUMN_ID
+                    + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + ServiceContract.RELATIONS_COLUMN_RELATION_ID
+                    + " INTEGER, "
+                    + ServiceContract.RELATIONS_COLUMN_SUBSCRIBER
+                    + " INTEGER, "
+                    + ServiceContract.RELATIONS_COLUMN_SUBSCRIPTION
+                    + " INTEGER, "
+                    + ServiceContract.RELATIONS_COLUMN_STATUS
+                    + " TEXT, "
+                    + ServiceContract.RELATIONS_COLUMN_TIMESTAMP
+                    + " INTEGER) ";
+
     @Override
     public void onCreate(SQLiteDatabase db) {
 
@@ -87,6 +104,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_ANSWERS_DATA_TABLE);
         db.execSQL(CREATE_QUESTIONS_DATA_TABLE);
         db.execSQL(CREATE_OPTIONS_DATA_TABLE);
+        db.execSQL(CREATE_RELATIONS_DATA_TABLE);
     }
 
     @Override
@@ -100,6 +118,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 + ServiceContract.QUESTIONS_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "
                 + ServiceContract.OPTIONS_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "
+                + ServiceContract.RELATIONS_TABLE_NAME);
         onCreate(db);
     }
 

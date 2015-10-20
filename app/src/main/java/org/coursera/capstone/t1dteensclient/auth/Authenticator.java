@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 public class Authenticator extends AbstractAccountAuthenticator {
+    // TODO implement real Authenticator
     // Simple constructor
     public Authenticator(Context context) {
         super(context);

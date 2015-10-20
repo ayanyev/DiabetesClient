@@ -9,8 +9,7 @@ import org.coursera.capstone.t1dteensclient.client.RequestResult;
 import org.coursera.capstone.t1dteensclient.client.SecuredRestBuilder;
 import org.coursera.capstone.t1dteensclient.client.T1DteensSvcApi;
 import org.coursera.capstone.t1dteensclient.client.UnsafeHttpsClient;
-import org.coursera.capstone.t1dteensclient.entities.CheckIn;
-import org.coursera.capstone.t1dteensclient.entities.User;
+import org.coursera.capstone.t1dteensclient.entities.*;
 import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 import retrofit.converter.JacksonConverter;
@@ -38,6 +37,7 @@ public class SvcController {
                 .setUsername(username)
                 .setPassword(password)
                 .setClientId(Constants.CLIENT_ID)
+                // TODO change for safe Http Client
                 .setClient(new OkClient(UnsafeHttpsClient.getUnsafeOkHttpClient()))
                 .setEndpoint(Constants.SERVER_URL)
                 .setLogLevel(RestAdapter.LogLevel.FULL)
@@ -51,6 +51,11 @@ public class SvcController {
         return mServiceApi.addUser(user);
     }
 
+    public User getUserDetails(long id){
+
+        return mServiceApi.getUserById(id);
+    }
+
     public CheckIn addCheckin(CheckIn checkin){
 
         return mServiceApi.addCheckin(checkin);
@@ -59,5 +64,30 @@ public class SvcController {
     public List<CheckIn> bulkAddCheckins(List<CheckIn> checkin){
 
         return mServiceApi.bulkAddCheckins(checkin);
+    }
+
+    public List<Question> getUpdatedQuestionsList(Long timeStampInMIllis){
+
+        return mServiceApi.getQuestionsList(timeStampInMIllis);
+    }
+
+    public List<Option> getUpdatedOptionsList(Long timeStampInMIllis){
+
+        return mServiceApi.getOptionsList(timeStampInMIllis);
+    }
+
+    public List<Relation> getUpdatedRelationsList(Long timeStampInMillis) {
+
+        return mServiceApi.getRelationsList(timeStampInMillis);
+    }
+
+    public Relation addRelation(Relation relation){
+
+        return mServiceApi.addRelation(relation);
+    }
+
+    public List<Relation> bulkAddRelations(List<Relation> relations){
+
+        return mServiceApi.bulkAddRelations(relations);
     }
 }

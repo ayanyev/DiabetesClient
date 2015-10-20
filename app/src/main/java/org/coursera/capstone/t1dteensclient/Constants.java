@@ -10,5 +10,9 @@ public class Constants {
     public static final String ACCOUNT_TYPE = "org.coursera.capstone";
     public static final String ACCOUNT ="syncaccount";
 
+    public static final String LAST_TIME_CHECKINS_SYNCED ="lastTimeCheckinsSynced";
+    public static final String LAST_TIME_QUESTIONS_SYNCED ="lastTimeOptionsSynced";
+    public static final String LAST_TIME_RELATIONS_SYNCED ="lastTimeRelationsSynced";
+
 
 }

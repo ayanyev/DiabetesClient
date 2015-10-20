@@ -22,7 +22,6 @@ public class ServiceContentProvider extends ContentProvider {
     public UriMatcher mMatcher;
     private static final int MATCH_ALL = 1;
     private static final int MATCH_ONE = 2;
-    private static final int MATCH_ONE_TIMESTAMP = 3;
     private static final int MATCH_ALL_CHECKINS = 100;
     private static final int MATCH_ONE_CHECKIN = 200;
     private static final int MATCH_ALL_ANSWERS = 300;

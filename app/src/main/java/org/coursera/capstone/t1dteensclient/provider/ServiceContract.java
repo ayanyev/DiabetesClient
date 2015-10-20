@@ -48,4 +48,16 @@ public final class ServiceContract {
     public static String OPTIONS_COLUMN_TEXT = "text";
     public static String OPTIONS_COLUMN_QUESTION_ID = "question_id";
     public static String OPTIONS_COLUMN_TIMESTAMP = "timestamp";
+    public static String OPTIONS_COLUMN_WEIGHT = "weight";
+
+    public static String RELATIONS_TABLE_NAME = "relations";
+    public static final Uri RELATIONS_DATA_URI = Uri.parse("content://" + AUTHORITY + "/" + RELATIONS_TABLE_NAME);
+    public static final Uri RELATIONS_DATA_ITEM_URI = Uri.parse("content://" + AUTHORITY + "/" + RELATIONS_TABLE_NAME + "/#");
+
+    public static String RELATIONS_COLUMN_ID = "_ID";
+    public static String RELATIONS_COLUMN_RELATION_ID = "relation_id";
+    public static String RELATIONS_COLUMN_SUBSCRIBER = "subscriber";
+    public static String RELATIONS_COLUMN_SUBSCRIPTION = "subscription";
+    public static String RELATIONS_COLUMN_STATUS = "status";
+    public static String RELATIONS_COLUMN_TIMESTAMP = "timestamp";
 }

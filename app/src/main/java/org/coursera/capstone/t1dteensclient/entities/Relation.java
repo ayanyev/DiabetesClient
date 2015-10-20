@@ -1,12 +1,18 @@
 package org.coursera.capstone.t1dteensclient.entities;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import org.coursera.capstone.t1dteensclient.entities.enums.RelationStatus;
+import org.coursera.capstone.t1dteensclient.provider.ServiceContract;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
-public class Relation {
+public class Relation implements EntityInterface{
 
-    private long rel_id;
+    private long relId;
     private long subscriber;
     private long subscription;
     private RelationStatus status;
@@ -37,12 +43,12 @@ public class Relation {
         this.subscriber = subscriber;
     }
 
-    public long getRel_id() {
-        return rel_id;
+    public long getId() {
+        return relId;
     }
 
-    public void setRel_id(long rel_id) {
-        this.rel_id = rel_id;
+    public void setId(long relId) {
+        this.relId = relId;
     }
 
     public RelationStatus getStatus() {
@@ -61,17 +67,47 @@ public class Relation {
         this.timestamp = timestamp;
     }
 
-    /*    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Relation relation = (Relation) o;
-        return Objects.equals(subscriber, relation.subscriber) &&
-                Objects.equals(subscription, relation.subscription);
+
+    @Override
+    public ContentValues toContentValues() {
+
+        ContentValues cv = new ContentValues();
+
+        cv.put(ServiceContract.RELATIONS_COLUMN_RELATION_ID, relId);
+        cv.put(ServiceContract.RELATIONS_COLUMN_SUBSCRIBER, subscriber);
+        cv.put(ServiceContract.RELATIONS_COLUMN_SUBSCRIPTION, subscription);
+        cv.put(ServiceContract.RELATIONS_COLUMN_STATUS, String.valueOf(status));
+        cv.put(ServiceContract.QUESTIONS_COLUMN_TIMESTAMP,
+                (new Date(System.currentTimeMillis()).getTime()));
+
+        return cv;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(subscriber, subscription);
-    }*/
+    public Uri saveIt(Context context) {
+        return null;
+    }
+
+    public Relation fromCursorToPOJO(Cursor cursor, int position) {
+
+        // fills RELATION fields from cursor
+
+        Long id;
+
+        cursor.moveToPosition(position);
+
+        id = cursor.getLong(cursor
+                .getColumnIndex(ServiceContract.RELATIONS_COLUMN_RELATION_ID));
+        this.setId((id == 0) ? null : id);
+        this.setSubscriber(cursor.getLong(cursor
+                .getColumnIndex(ServiceContract.RELATIONS_COLUMN_SUBSCRIBER)));
+        this.setSubscription(cursor.getLong(cursor
+                .getColumnIndex(ServiceContract.RELATIONS_COLUMN_SUBSCRIPTION)));
+        this.setStatus(RelationStatus.valueOf(cursor.getString(cursor
+                .getColumnIndex(ServiceContract.RELATIONS_COLUMN_STATUS))));
+        this.setTimestamp(new Timestamp(cursor.getLong(cursor
+                .getColumnIndex(ServiceContract.CHECKINS_COLUMN_TIMESTAMP))));
+
+        return this;
+    }
 }
