@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="dataSourceStorage">
+  <data-source name="MySQL - MySql@localhost" uuid="1cccf64a-9391-4eb9-a6d0-14fedb24d7a6">
+    <database-info product="MySQL" version="5.6.27-log" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.35 ( Revision: 5fb9c5849535c13917c2cf9baaece6ef9693ef27 )">
+      <extra-name-characters>#@</extra-name-characters>
+      <identifier-quote-string>`</identifier-quote-string>
+    </database-info>
+    <case-sensitivity plain-identifiers="lower" quoted-identifiers="lower"/>
+    <schema name="" catalog="t1dteens"/>
+    <table name="answers" schema="" catalog="t1dteens" type="TABLE">
+      <column name="answer_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="text" sqlType="VARCHAR" precision="100" scale="0" nullable="true" jdbcType="12"/>
+      <column name="checkin_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="question_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="timestamp" sqlType="TIMESTAMP" precision="19" scale="0" nullable="true" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA=" version="true"/>
+      <primary-key name="PRIMARY" columns="answer_id"/>
+      <foreign-key name="fk_answers_checkins1" columns="checkin_id" ref-table="checkins" ref-schema="" ref-catalog="t1dteens" ref-columns="checkin_id" update-rule="3" delete-rule="0" deferrability="2"/>
+      <index name="answer_id_UNIQUE" unique="true" columns="answer_id"/>
+      <index name="fk_answers_checkins1_idx" unique="false" columns="checkin_id"/>
+    </table>
+    <table name="checkins" schema="" catalog="t1dteens" type="TABLE">
+      <column name="checkin_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="status" sqlType="VARCHAR" precision="15" scale="0" nullable="false" jdbcType="12"/>
+      <column name="user_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="timestamp" sqlType="TIMESTAMP" precision="19" scale="0" nullable="true" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA=" version="true"/>
+      <primary-key name="PRIMARY" columns="checkin_id"/>
+      <foreign-key name="fk_checkins_users1" columns="user_id" ref-table="users" ref-schema="" ref-catalog="t1dteens" ref-columns="user_id" update-rule="3" delete-rule="0" deferrability="2"/>
+      <exported-key name="fk_answers_checkins1" table="answers" schema="" catalog="t1dteens" columns="checkin_id"/>
+      <index name="checkin_id_UNIQUE" unique="true" columns="checkin_id"/>
+      <index name="fk_checkins_users1_idx" unique="false" columns="user_id"/>
+    </table>
+    <table name="options" schema="" catalog="t1dteens" type="TABLE">
+      <column name="option_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="text" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="question_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="timestamp" sqlType="TIMESTAMP" precision="19" scale="0" nullable="true" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA=" version="true"/>
+      <primary-key name="PRIMARY" columns="option_id"/>
+      <foreign-key name="fk_options_questions1" columns="question_id" ref-table="questions" ref-schema="" ref-catalog="t1dteens" ref-columns="question_id" update-rule="3" delete-rule="0" deferrability="2"/>
+      <index name="option_id_UNIQUE" unique="true" columns="option_id"/>
+      <index name="fk_options_questions1_idx" unique="false" columns="question_id"/>
+    </table>
+    <table name="questions" schema="" catalog="t1dteens" type="TABLE">
+      <column name="question_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="text" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12"/>
+      <column name="answer_type" sqlType="VARCHAR" precision="15" scale="0" nullable="false" jdbcType="12"/>
+      <column name="required" sqlType="TINYINT" precision="3" scale="0" nullable="false" jdbcType="-6"/>
+      <column name="timestamp" sqlType="TIMESTAMP" precision="19" scale="0" nullable="true" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA=" version="true"/>
+      <primary-key name="PRIMARY" columns="question_id"/>
+      <exported-key name="fk_options_questions1" table="options" schema="" catalog="t1dteens" columns="question_id"/>
+      <index name="question_id_UNIQUE" unique="true" columns="question_id"/>
+    </table>
+    <table name="relations" schema="" catalog="t1dteens" type="TABLE">
+      <column name="relation_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="subscriber" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="subscription" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="status" sqlType="VARCHAR" precision="20" scale="0" nullable="false" jdbcType="12"/>
+      <column name="timestamp" sqlType="TIMESTAMP" precision="19" scale="0" nullable="true" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA=" version="true"/>
+      <primary-key name="PRIMARY" columns="relation_id"/>
+      <index name="relation_id_UNIQUE" unique="true" columns="relation_id"/>
+    </table>
+    <table name="users" schema="" catalog="t1dteens" type="TABLE">
+      <column name="user_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name_first" sqlType="VARCHAR" precision="20" scale="0" nullable="false" jdbcType="12"/>
+      <column name="name_last" sqlType="VARCHAR" precision="20" scale="0" nullable="false" jdbcType="12"/>
+      <column name="username" sqlType="VARCHAR" precision="20" scale="0" nullable="false" jdbcType="12"/>
+      <column name="password" sqlType="VARCHAR" precision="20" scale="0" nullable="false" jdbcType="12"/>
+      <column name="medical_record" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="date_of_birth" sqlType="DATE" precision="10" scale="0" nullable="false" jdbcType="91"/>
+      <column name="gender" sqlType="VARCHAR" precision="6" scale="0" nullable="false" jdbcType="12"/>
+      <column name="user_type" sqlType="VARCHAR" precision="10" scale="0" nullable="false" jdbcType="12"/>
+      <column name="enabled" sqlType="TINYINT" precision="3" scale="0" nullable="false" jdbcType="-6"/>
+      <column name="timestamp" sqlType="TIMESTAMP" precision="19" scale="0" nullable="true" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA=" version="true"/>
+      <primary-key name="PRIMARY" columns="user_id"/>
+      <exported-key name="fk_checkins_users1" table="checkins" schema="" catalog="t1dteens" columns="user_id"/>
+      <index name="login_UNIQUE" unique="true" columns="username"/>
+      <index name="user_id_UNIQUE" unique="true" columns="user_id"/>
+    </table>
+  </data-source>
+</component>
