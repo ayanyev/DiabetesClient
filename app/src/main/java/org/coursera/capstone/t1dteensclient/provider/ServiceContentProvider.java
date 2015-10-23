@@ -53,24 +53,23 @@ public class ServiceContentProvider extends ContentProvider {
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         final SQLiteDatabase db = mDbHelper.getReadableDatabase();
-
-        // TODO handle ALL and ITEM
         String mTable;
 
         switch (mMatcher.match(uri)) {
 
             case MATCH_ALL:
-                mTable = uri.getLastPathSegment();
+                mTable = uri.getPathSegments().get(0);
                 break;
             case MATCH_ONE:
-                selection = "_ID = ?";
-                selectionArgs[0] = uri.getLastPathSegment();
+                mTable = uri.getPathSegments().get(0);
+                selection = "_id = ?";
+                selectionArgs[0] = uri.getPathSegments().get(1);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
 
-        return db.query(uri.getLastPathSegment(),
+        return db.query(mTable,
                         projection,
                         selection,
                         selectionArgs,
@@ -122,7 +121,7 @@ public class ServiceContentProvider extends ContentProvider {
                 break;
             case MATCH_ONE:
                 mTable = uri.getPathSegments().get(0);
-                selection = "_ID = ?";
+                selection = "_id = ?";
                 selectionArgs[0] = uri.getLastPathSegment();
                 break;
             default:
@@ -149,7 +148,7 @@ public class ServiceContentProvider extends ContentProvider {
                 break;
             case MATCH_ONE:
                 mTable = "";
-                selection = "_ID = ?";
+                selection = "_id = ?";
                 selectionArgs[0] = uri.getLastPathSegment();
                 break;
             default:

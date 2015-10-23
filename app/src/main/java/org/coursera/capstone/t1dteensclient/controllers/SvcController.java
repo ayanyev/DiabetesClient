@@ -11,6 +11,7 @@ import org.coursera.capstone.t1dteensclient.client.T1DteensSvcApi;
 import org.coursera.capstone.t1dteensclient.client.UnsafeHttpsClient;
 import org.coursera.capstone.t1dteensclient.entities.*;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.converter.JacksonConverter;
 
@@ -46,7 +47,7 @@ public class SvcController {
                 .create(T1DteensSvcApi.class);
     }
 
-    public RequestResult register(final User user){
+    public RequestResult register(final User user) throws RetrofitError{
 
         return mServiceApi.addUser(user);
     }

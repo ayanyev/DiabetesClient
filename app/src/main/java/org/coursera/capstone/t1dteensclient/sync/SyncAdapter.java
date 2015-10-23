@@ -21,8 +21,6 @@ import java.util.List;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
-
-    Context context;
     ContentResolver mContentResolver;
     SvcController mController;
     SharedPreferences prefs;
@@ -96,11 +94,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
         Log.d(TAG, "onPerformSync reached");
-    }
-
-    private void syncUserDetails(ContentProviderClient provider) {
-
-
     }
 
     private void syncAllRelations(ContentProviderClient provider) {

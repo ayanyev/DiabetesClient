@@ -21,7 +21,7 @@ import org.coursera.capstone.t1dteensclient.common.GenericActivity;
 import org.coursera.capstone.t1dteensclient.entities.User;
 import org.coursera.capstone.t1dteensclient.entities.enums.UserGender;
 import org.coursera.capstone.t1dteensclient.entities.enums.UserType;
-import org.coursera.capstone.t1dteensclient.presenter.LoginOps;
+import org.coursera.capstone.t1dteensclient.presenter.MainActivityOps;
 import org.joda.time.DateTime;
 
 import java.text.ParseException;
@@ -32,7 +32,7 @@ import java.text.SimpleDateFormat;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity
-        extends GenericActivity<LoginOps> {
+        extends GenericActivity<MainActivityOps> {
 
     private SharedPreferences prefs;
 
@@ -49,7 +49,7 @@ public class LoginActivity
     private View mRegisterFormView;
     private Button mRegisterButton;
     private Button mDatePickerButton;
-    private LoginOps mLoginOps;
+    private MainActivityOps mLoginOps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +58,9 @@ public class LoginActivity
 
         setContentView(R.layout.activity_login);
 
-        mLoginOps = super.onCreate(LoginOps.class);
+        mLoginOps = super.onCreate(MainActivityOps.class);
 
-        mCallbacks = (LoginOps) mLoginOps;
+        mCallbacks = (MainActivityOps) mLoginOps;
 
         initializeViews();
 

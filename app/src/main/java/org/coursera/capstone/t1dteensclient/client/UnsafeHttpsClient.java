@@ -24,11 +24,13 @@ public class UnsafeHttpsClient {
 					new X509TrustManager() {
 
 						@Override
-						public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+						public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType)
+								throws CertificateException {
 						}
 
 						@Override
-						public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+						public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType)
+								throws CertificateException {
 						}
 
 						@Override

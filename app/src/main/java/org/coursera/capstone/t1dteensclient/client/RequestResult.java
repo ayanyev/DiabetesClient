@@ -23,7 +23,7 @@ import org.coursera.capstone.t1dteensclient.entities.User;
 public class RequestResult {
 
 	public enum UserState {
-		ADDED, UPDATED, CONFLICT, DELETED, SERVER_ERROR
+		ADDED, UPDATED, CONFLICT, DELETED, SERVER_ERROR, FAILED_TO_CONNECT_TO_SERVER
 	}
 
 	private UserState state;

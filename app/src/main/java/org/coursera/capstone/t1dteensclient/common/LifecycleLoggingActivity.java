@@ -1,12 +1,29 @@
 package org.coursera.capstone.t1dteensclient.common;
 
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
 
-public abstract class LifecycleLoggingActivity extends AppCompatActivity {
+import org.coursera.capstone.t1dteensclient.R;
+
+import java.util.Locale;
+
+public abstract class LifecycleLoggingActivity extends Activity {
 
 	private final String TAG = getClass().getSimpleName();
+
 //	protected VideoSvcApp mMyApp;
 
 	/**
@@ -22,13 +39,11 @@ public abstract class LifecycleLoggingActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_generic);
 
 		if (savedInstanceState != null) {
-
 			Log.d(TAG, "onCreate(): activity re-created");
-
 		} else {
-
 			Log.d(TAG, "onCreate(): activity created anew");
 		}
 
@@ -123,5 +138,7 @@ public abstract class LifecycleLoggingActivity extends AppCompatActivity {
 		if (currActivity != null && currActivity.equals(this))
 			mMyApp.setCurrentActivity(null);
 	}*/
+
+
 
 }
