@@ -25,7 +25,10 @@ import org.coursera.capstone.t1dteensclient.Constants;
 import org.coursera.capstone.t1dteensclient.R;
 import org.coursera.capstone.t1dteensclient.common.GenericFragment;
 import org.coursera.capstone.t1dteensclient.common.LifecycleLoggingActivity;
+import org.coursera.capstone.t1dteensclient.entities.Answer;
+import org.coursera.capstone.t1dteensclient.entities.CheckIn;
 import org.coursera.capstone.t1dteensclient.entities.User;
+import org.coursera.capstone.t1dteensclient.entities.enums.CheckInStatus;
 import org.coursera.capstone.t1dteensclient.provider.ContentProviderObserver;
 import org.coursera.capstone.t1dteensclient.provider.ServiceContract;
 import org.coursera.capstone.t1dteensclient.sync.SyncAdapter;
@@ -66,10 +69,10 @@ public class MainActivity extends LifecycleLoggingActivity implements DatePicker
         // check if user is logged in
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-/*        // TODO. REMOVE AFTER TESTING DONE
+        // TODO. REMOVE AFTER TESTING DONE
         prefs.edit().putString("username", "teen2")
                     .putString("password", "2222")
-                    .commit();*/
+                    .commit();
         loggedAs = prefs.getString("username", "guest");
 
         if (loggedAs.equals("guest")) {
@@ -120,7 +123,31 @@ public class MainActivity extends LifecycleLoggingActivity implements DatePicker
             }
             ////////
 
+            CheckIn ci1 = new CheckIn();
+            Answer a1 = new Answer(1);
+            a1.setQuestionId(1);
+            Answer a2 = new Answer(2);
+            a1.setQuestionId(2);
 
+            ci1.getAnswers().add(a1);
+            ci1.getAnswers().add(a2);
+            ci1.setStatus(CheckInStatus.PASSED);
+            ci1.setUser_id((long) 4);
+
+            ci1.saveIt(getApplicationContext());
+
+/*            CheckIn ci2 = new CheckIn();
+            Answer a3 = new Answer(1);
+            a3.setQuestionId(1);
+            Answer a4 = new Answer(2);
+            a4.setQuestionId(2);
+
+            ci2.getAnswers().add(a3);
+            ci2.getAnswers().add(a4);
+            ci2.setStatus(CheckInStatus.SKIPPED);
+            ci2.setUser_id((long) 4);
+
+            ci2.saveIt(getApplicationContext());*/
         }
     }
 

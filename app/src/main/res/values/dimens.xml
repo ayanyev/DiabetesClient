@@ -8,7 +8,7 @@
     <dimen name="listItemTextPaddingLeft">72dp</dimen>
     <dimen name="listItemTextPaddingTopBottom">20dp</dimen>
     <dimen name="card_margin">8dp</dimen>
-    <dimen name="card_elevation">2dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
     <dimen name="primary_text">16sp</dimen>
     <dimen name="secondary_text">14sp</dimen>
 </resources>

@@ -115,7 +115,7 @@ public class CheckIn implements EntityInterface{
 
         Long id;
 
-        checkins.moveToPosition(position);
+        if (position != -1) checkins.moveToPosition(position);
 
         id = checkins.getLong(checkins
                 .getColumnIndex(ServiceContract.CHECKINS_COLUMN_CHECKING_ID));

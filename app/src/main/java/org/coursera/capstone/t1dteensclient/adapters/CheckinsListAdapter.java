@@ -27,7 +27,7 @@ public class CheckinsListAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-        CheckIn ci = (new CheckIn()).fromCursorToPOJO(cursor, 0, null);
+        CheckIn ci = (new CheckIn()).fromCursorToPOJO(cursor, -1, null);
 
         ImageView image = (ImageView) view.findViewById(R.id.checkinListItem_image);
         TextView status = (TextView) view.findViewById(R.id.checkinListItem_status);
@@ -36,7 +36,7 @@ public class CheckinsListAdapter extends CursorAdapter {
         } else if (ci.getStatus() == CheckInStatus.SKIPPED){
             image.setImageResource(R.drawable.skipped);
         }
-        status.setText(String.valueOf(ci.getStatus()));
+        status.setText(String.valueOf(ci.getStatus()).toLowerCase());
 
         TextView timestamp = (TextView) view.findViewById(R.id.checkinListItem_timestamp);
         timestamp.setText(ci.getTimestamp().toString());

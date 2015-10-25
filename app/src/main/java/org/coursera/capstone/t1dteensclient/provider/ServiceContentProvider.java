@@ -30,6 +30,8 @@ public class ServiceContentProvider extends ContentProvider {
     private static final int MATCH_ONE_QUESTION = 600;
     private static final int MATCH_ALL_OPTIONS = 700;
     private static final int MATCH_ONE_OPTION = 800;
+    private static final int MATCH_ALL_REATIONS = 900;
+    private static final int MATCH_ONE_RELATION = 1000;
 
 
     @Override

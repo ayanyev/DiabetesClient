@@ -4,8 +4,23 @@ import android.net.Uri;
 
 public final class ServiceContract {
 
+
+
     public static String AUTHORITY = "org.coursera.capstone.T1DTeensService.provider";
     public static final String SCHEME = "content";
+
+    public static final int MATCH_ALL = 1;
+    public static final int MATCH_ONE = 2;
+    public static final int MATCH_ALL_CHECKINS = 100;
+    public static final int MATCH_ONE_CHECKIN = 200;
+    public static final int MATCH_ALL_ANSWERS = 300;
+    public static final int MATCH_ONE_ANSWER = 400;
+    public static final int MATCH_ALL_QUESTIONS = 500;
+    public static final int MATCH_ONE_QUESTION = 600;
+    public static final int MATCH_ALL_OPTIONS = 700;
+    public static final int MATCH_ONE_OPTION = 800;
+    public static final int MATCH_ALL_REATIONS = 900;
+    public static final int MATCH_ONE_RELATION = 1000;
 
     public static String CHECKINS_TABLE_NAME = "checkins";
     public static final Uri CHECKINS_DATA_URI = Uri.parse("content://" + AUTHORITY + "/" + CHECKINS_TABLE_NAME);

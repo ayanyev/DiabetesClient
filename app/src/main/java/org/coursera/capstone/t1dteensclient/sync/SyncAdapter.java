@@ -19,6 +19,8 @@ import org.coursera.capstone.t1dteensclient.provider.ServiceContract;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.coursera.capstone.t1dteensclient.provider.ServiceContract.*;
+
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     ContentResolver mContentResolver;
@@ -26,15 +28,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     SharedPreferences prefs;
     UriMatcher mMatcher;
     Uri uri;
-
-    private static final int MATCH_ALL = 1;
-    private static final int MATCH_ONE = 2;
-    private static final int MATCH_ALL_CHECKINS = 100;
-    private static final int MATCH_ONE_CHECKIN = 200;
-    private static final int MATCH_ALL_QUESTIONS = 300;
-    private static final int MATCH_ALL_REATIONS = 400;
-    private static final int MATCH_ONE_RELATION = 500;
-//    private static final int MATCH_ONE_USER = 600;
 
     private final String TAG = getClass().getSimpleName();
 
@@ -55,11 +48,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 
         mMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        mMatcher.addURI(ServiceContract.AUTHORITY, ServiceContract.CHECKINS_TABLE_NAME, MATCH_ALL_CHECKINS);
-        mMatcher.addURI(ServiceContract.AUTHORITY, ServiceContract.CHECKINS_TABLE_NAME + "/#", MATCH_ONE_CHECKIN);
-        mMatcher.addURI(ServiceContract.AUTHORITY, ServiceContract.QUESTIONS_TABLE_NAME, MATCH_ALL_QUESTIONS);
-        mMatcher.addURI(ServiceContract.AUTHORITY, ServiceContract.RELATIONS_TABLE_NAME, MATCH_ALL_REATIONS);
-        mMatcher.addURI(ServiceContract.AUTHORITY, ServiceContract.RELATIONS_TABLE_NAME + "/#", MATCH_ONE_RELATION);
+        mMatcher.addURI(AUTHORITY, CHECKINS_TABLE_NAME, MATCH_ALL_CHECKINS);
+        mMatcher.addURI(AUTHORITY, CHECKINS_TABLE_NAME + "/#", MATCH_ONE_CHECKIN);
+        mMatcher.addURI(AUTHORITY, QUESTIONS_TABLE_NAME, MATCH_ALL_QUESTIONS);
+        mMatcher.addURI(AUTHORITY, RELATIONS_TABLE_NAME, MATCH_ALL_REATIONS);
+        mMatcher.addURI(AUTHORITY, RELATIONS_TABLE_NAME + "/#", MATCH_ONE_RELATION);
     }
 
     @Override
@@ -81,16 +74,22 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             case MATCH_ALL_CHECKINS:
                 syncAllCheckins(provider);
+                break;
             case MATCH_ONE_CHECKIN:
                 syncOneCheckin(provider);
+                break;
             case MATCH_ALL_QUESTIONS:
                 syncQuestions(provider);
+                break;
             case MATCH_ALL_REATIONS:
                 syncAllRelations(provider);
             case MATCH_ONE_RELATION:
                 syncOneRelation(provider);
+                break;
 //            case MATCH_ONE_USER:
 //                syncUserDetails(provider);
+            default:
+                break;
         }
 
         Log.d(TAG, "onPerformSync reached");
@@ -98,7 +97,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void syncAllRelations(ContentProviderClient provider) {
 
-        Uri uri = ServiceContract.RELATIONS_DATA_URI;
+        Uri uri = RELATIONS_DATA_URI;
         ContentValues cv;
         String selection;
         String[] selectionArgs;
@@ -163,7 +162,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void syncOneRelation(ContentProviderClient provider) {
 
-        Uri uri = ServiceContract.RELATIONS_DATA_URI;
+        Uri uri = RELATIONS_DATA_URI;
         ContentValues cv;
         String selection;
         String[] selectionArgs;
@@ -216,7 +215,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             List<Question> questions = mController.getUpdatedQuestionsList(timeStampInMillis);
             for (Question question : questions) {
 
-                uri = ServiceContract.QUESTIONS_DATA_URI;
+                uri = QUESTIONS_DATA_URI;
                 cv = question.toContentValues();
                 selection = "question_id = ?";
                 selectionArgs = new String[]{String.valueOf(question.getId())};
@@ -228,7 +227,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             List<Option> options = mController.getUpdatedOptionsList(timeStampInMillis);
             for (Option option : options) {
 
-                uri = ServiceContract.QUESTIONS_DATA_URI;
+                uri = QUESTIONS_DATA_URI;
                 cv = option.toContentValues();
                 selection = "option_id = ?";
                 selectionArgs = new String[]{String.valueOf(option.getId())};
@@ -252,7 +251,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         String[] selectionArgs;
         CheckIn checkin = null;
 
-        uri = ServiceContract.CHECKINS_DATA_URI;
+        uri = CHECKINS_DATA_URI;
         selection = "_ID = ?";
         selectionArgs = new String[]{this.uri.getLastPathSegment()};
 
@@ -270,10 +269,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                 // get ID of checkin in local db
                 int checkin_id = cursor.getInt(cursor
-                        .getColumnIndex(ServiceContract.CHECKINS_COLUMN_ID));
+                        .getColumnIndex(CHECKINS_COLUMN_ID));
 
                 // query for answers which belong to checkin
-                uri = ServiceContract.ANSWERS_DATA_URI;
+                uri = ANSWERS_DATA_URI;
                 selection = "checkin_id = ?";
                 selectionArgs = new String[]{String.valueOf(checkin_id)};
 
@@ -294,7 +293,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             checkin = mController.addCheckin(checkin);
 
             // updates checkin_id in local db
-            uri = ServiceContract.CHECKINS_DATA_URI;
+            uri = CHECKINS_DATA_URI;
             selection = "timestamp = ?";
             cv = checkin.toContentValues();
             selectionArgs = new String[]{String.valueOf(checkin.getTimestamp().getTime())};
@@ -317,7 +316,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         String[] selectionArgs;
         Long timeOfLastSync = System.currentTimeMillis();
 
-        uri = ServiceContract.CHECKINS_DATA_URI;
+        uri = CHECKINS_DATA_URI;
         selection = "timestamp > ?";
         selectionArgs = new String[]{String.valueOf(prefs.getLong(Constants.LAST_TIME_CHECKINS_SYNCED, 0))};
 
@@ -339,10 +338,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                     // get ID of checkin in local db
                     int checkin_id = cursor.getInt(cursor
-                            .getColumnIndex(ServiceContract.CHECKINS_COLUMN_ID));
+                            .getColumnIndex(CHECKINS_COLUMN_ID));
 
                     // query for answers which belong to checkin
-                    uri = ServiceContract.ANSWERS_DATA_URI;
+                    uri = ANSWERS_DATA_URI;
                     selection = "checkin_id = ?";
                     selectionArgs = new String[]{String.valueOf(checkin_id)};
 
@@ -365,7 +364,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             checkins = mController.bulkAddCheckins(checkins);
 
             // updates checkin_id in local db
-            uri = ServiceContract.CHECKINS_DATA_URI;
+            uri = CHECKINS_DATA_URI;
             selection = "timestamp = ?";
 
             for (CheckIn ci : checkins){

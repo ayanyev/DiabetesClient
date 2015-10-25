@@ -28,7 +28,7 @@
             android:layout_centerVertical="true"
             android:layout_alignParentStart="false"
             android:layout_alignParentRight="false"
-            android:src="@drawable/passed" />
+            />
 
         <TextView
             android:layout_width="wrap_content"
