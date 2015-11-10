@@ -2,20 +2,25 @@ package org.coursera.capstone.t1dteensclient.controllers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.coursera.capstone.t1dteensclient.Constants;
+import org.coursera.capstone.t1dteensclient.Utils;
 import org.coursera.capstone.t1dteensclient.client.RequestResult;
 import org.coursera.capstone.t1dteensclient.client.SecuredRestBuilder;
 import org.coursera.capstone.t1dteensclient.client.T1DteensSvcApi;
 import org.coursera.capstone.t1dteensclient.client.UnsafeHttpsClient;
 import org.coursera.capstone.t1dteensclient.entities.*;
+import org.coursera.capstone.t1dteensclient.entities.enums.UserType;
+
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.converter.JacksonConverter;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class SvcController {
 
@@ -28,8 +33,8 @@ public class SvcController {
         this.mContext = mContext;
         prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 
-        String username = prefs.getString("username", "guest");
-        String password = prefs.getString("password", "guest");
+        String username = Utils.getCurrentUserName(mContext);
+        String password = Utils.getCurrentPassword(mContext);
 
         JacksonConverter converter = new JacksonConverter(new ObjectMapper());
 
@@ -52,9 +57,37 @@ public class SvcController {
         return mServiceApi.addUser(user);
     }
 
-    public User getUserDetails(long id){
+    public User getUserById(long id){
+        try {
+            return (new AsyncTask<Long, Void, User>() {
+                @Override
+                protected User doInBackground(Long... params) {
+                    return mServiceApi.getUserById(params[0]);
+                }
+            }.execute(id)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-        return mServiceApi.getUserById(id);
+    public RequestResult getUserByCredentials(User user){
+        try {
+            return (new AsyncTask<User, Void, RequestResult>() {
+                @Override
+                protected RequestResult doInBackground(User...params) {
+
+                    try {
+                        return mServiceApi.getUserByCredentials(params[0]);
+                    } catch (RetrofitError retrofitError) {
+                        return new RequestResult(RequestResult.Message.FAILED_TO_CONNECT_TO_SERVER);
+                    }
+                }
+            }.execute(user)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public CheckIn addCheckin(CheckIn checkin){
@@ -77,9 +110,9 @@ public class SvcController {
         return mServiceApi.getOptionsList(timeStampInMIllis);
     }
 
-    public List<Relation> getUpdatedRelationsList(Long timeStampInMillis) {
+    public List<Relation> getUpdatedRelationsList(Long timeOfLastSync) {
 
-        return mServiceApi.getRelationsList(timeStampInMillis);
+        return mServiceApi.getRelationsList(timeOfLastSync, Utils.getCurrentUserId(mContext));
     }
 
     public Relation addRelation(Relation relation){
@@ -90,5 +123,10 @@ public class SvcController {
     public List<Relation> bulkAddRelations(List<Relation> relations){
 
         return mServiceApi.bulkAddRelations(relations);
+    }
+
+    public RequestResult getAllUsers(UserType userType) {
+
+        return mServiceApi.getUserList(userType);
     }
 }

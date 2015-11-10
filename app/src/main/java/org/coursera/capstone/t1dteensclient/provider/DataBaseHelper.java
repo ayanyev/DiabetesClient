@@ -6,8 +6,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
-    private static  String DATABASE_NAME = "t1dteens_db";
-    private static int DATABASE_VERSION = 2;
+    private static String DATABASE_NAME = "t1dteens_db";
+    private static int DATABASE_VERSION = 1;
     private Context mContext;
 
     public DataBaseHelper(Context context) {
@@ -62,6 +62,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     + " TEXT, "
                     + ServiceContract.QUESTIONS_COLUMN_REQUIRED
                     + " INTEGER,"
+                    + ServiceContract.QUESTIONS_COLUMN_ORDER
+                    + " INTEGER,"
                     + ServiceContract.ANSWERS_COLUMN_TIMESTAMP
                     + " INTEGER) ";
 
@@ -76,6 +78,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     + ServiceContract.OPTIONS_COLUMN_TEXT
                     + " TEXT, "
                     + ServiceContract.OPTIONS_COLUMN_QUESTION_ID
+                    + " INTEGER, "
+                    + ServiceContract.OPTIONS_COLUMN_WEIGHT
                     + " INTEGER, "
                     + ServiceContract.OPTIONS_COLUMN_TIMESTAMP
                     + " INTEGER) ";

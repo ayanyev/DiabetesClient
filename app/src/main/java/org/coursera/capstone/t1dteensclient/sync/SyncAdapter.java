@@ -14,7 +14,6 @@ import org.coursera.capstone.t1dteensclient.entities.CheckIn;
 import org.coursera.capstone.t1dteensclient.entities.Option;
 import org.coursera.capstone.t1dteensclient.entities.Question;
 import org.coursera.capstone.t1dteensclient.entities.Relation;
-import org.coursera.capstone.t1dteensclient.provider.ServiceContract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     SvcController mController;
     SharedPreferences prefs;
     UriMatcher mMatcher;
-    Uri uri;
+    Uri mUri;
+    Context mContext;
 
     private final String TAG = getClass().getSimpleName();
 
@@ -45,6 +45,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         mContentResolver = context.getContentResolver();
         mController = new SvcController(context.getApplicationContext());
+        mContext = context;
         prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 
         mMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -68,9 +69,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             e.printStackTrace();
         }
 
-        uri = Uri.parse(extras.getString("uri"));
+        mUri = Uri.parse(extras.getString("uri"));
 
-        switch (mMatcher.match(uri)) {
+        switch (mMatcher.match(mUri)) {
 
             case MATCH_ALL_CHECKINS:
                 syncAllCheckins(provider);
@@ -83,6 +84,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 break;
             case MATCH_ALL_REATIONS:
                 syncAllRelations(provider);
+                break;
             case MATCH_ONE_RELATION:
                 syncOneRelation(provider);
                 break;
@@ -91,8 +93,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             default:
                 break;
         }
-
-        Log.d(TAG, "onPerformSync reached");
     }
 
     private void syncAllRelations(ContentProviderClient provider) {
@@ -101,56 +101,63 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         ContentValues cv;
         String selection;
         String[] selectionArgs;
-        Long timeStampInMillis = prefs.getLong(Constants.LAST_TIME_RELATIONS_SYNCED, 0);
-        Long timeOfLastSync = System.currentTimeMillis();
+        Long timeOfLastSync = prefs.getLong(Constants.LAST_TIME_RELATIONS_SYNCED, 0);
+        Long timeStampInMillis = System.currentTimeMillis();
 
         try {
 
-            // gets list of Relations from server
-            List<Relation> relationsFromServer = mController.getUpdatedRelationsList(timeStampInMillis);
-
             // gets list of Relations from local database
-            selection = "timestamp = ?";
-            selectionArgs = new String[]{String.valueOf(timeStampInMillis)};
+            selection = "timestamp > ?";
+            selectionArgs = new String[]{String.valueOf(timeOfLastSync)};
             Cursor relationsFromLocalDB = provider.query(uri, null, selection, selectionArgs, null);
+
+            // put relations from local DB to server if there is any
+            if (relationsFromLocalDB != null) {
+                // creates list of POJOs from cursor
+                List<Relation> relations = new ArrayList<>();
+
+                if (relationsFromLocalDB.moveToFirst()) {
+
+                    while (!relationsFromLocalDB.isAfterLast()) {
+
+                        relations.add((new Relation()).fromCursorToPOJO(relationsFromLocalDB,
+                                relationsFromLocalDB.getPosition()));
+                        relationsFromLocalDB.moveToNext();
+                    }
+                    relationsFromLocalDB.close();
+                }
+                // puts Relations from local database to server
+                relations = mController.bulkAddRelations(relations);
+
+/*                // updates relation_id
+                for (Relation rel : relations) {
+
+                    cv = rel.toContentValues();
+                    selection = "timestamp = ?";
+                    selectionArgs = new String[]{String.valueOf(rel.getTimestamp().getTime())};
+                    provider.update(uri, cv, selection, selectionArgs);
+                }*/
+            }
+
+            // gets list of Relations from server
+            List<Relation> relationsFromServer = mController.getUpdatedRelationsList((long) 0);
+
+            provider.delete(uri, null, null);
 
             // puts Relations from server to local database
             for (Relation relation : relationsFromServer) {
 
                 cv = relation.toContentValues();
                 selection = "relation_id = ?";
-                selectionArgs = new String[]{String.valueOf(relation.getId())};
+                selectionArgs = new String[]{String.valueOf(relation.getRelId())};
 
-                if (provider.update(uri, cv, selection, selectionArgs) == 0)
+//                if (provider.update(uri, cv, selection, selectionArgs) == 0)
                     provider.insert(uri, cv);
             }
 
-            // creates list of POJOs from cursor
-            List<Relation> relations = new ArrayList<>();
-
-            if (relationsFromLocalDB.moveToFirst()) {
-
-                while (!relationsFromLocalDB.isAfterLast()) {
-
-                    relations.add((new Relation()).fromCursorToPOJO(relationsFromLocalDB,
-                                                                    relationsFromLocalDB.getPosition()));
-                    relationsFromLocalDB.moveToNext();
-                }
-                relationsFromLocalDB.close();
-            }
-            // puts Relations from local database to server
-            relations = mController.bulkAddRelations(relations);
-
-            // updates relation_id
-            for (Relation rel : relations){
-
-                cv = rel.toContentValues();
-                selectionArgs = new String[]{String.valueOf(rel.getTimestamp().getTime())};
-                provider.update(uri, cv, selection, selectionArgs);
-            }
-
             // sets last time of sync if sync was successfull
-            prefs.edit().putLong(Constants.LAST_TIME_CHECKINS_SYNCED, timeOfLastSync).commit();
+            // TODO uncomment after testing
+            prefs.edit().putLong(Constants.LAST_TIME_RELATIONS_SYNCED, System.currentTimeMillis()).commit();
 
             Log.d(TAG, "All_Relations sync done");
 
@@ -172,27 +179,30 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             // gets one item cursor
             selection = "_ID = ?";
-            selectionArgs = new String[]{String.valueOf(this.uri.getLastPathSegment())};
+            selectionArgs = new String[]{String.valueOf(this.mUri.getLastPathSegment())};
             Cursor cursor = provider.query(uri,
                                             null,
                                             selection,
                                             selectionArgs,
                                             null);
 
-            if (cursor.moveToFirst()) {
+            if (cursor != null && cursor.moveToFirst()) {
 
                 relation = mController.addRelation((new Relation()).fromCursorToPOJO(cursor,
                                                                                     cursor.getPosition()));
                 cursor.close();
             }
-
+/*
             // posts Relation from local database to server
-            relation = mController.addRelation(relation);
+            relation = mController.addRelation(relation);*/
 
             // updates relation_id
             cv = relation.toContentValues();
+
+            selection = "timestamp = ?";
             selectionArgs = new String[]{String.valueOf(relation.getTimestamp().getTime())};
-            provider.update(uri, cv, selection, selectionArgs);
+//            provider.update(uri, cv, selection, selectionArgs);
+            provider.update(mUri, cv, selection, selectionArgs);
 
             Log.d(TAG, "One_Relation sync done");
 
@@ -208,7 +218,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         ContentValues cv;
         String selection;
         String[] selectionArgs;
-        Long timeStampInMillis = prefs.getLong(Constants.LAST_TIME_QUESTIONS_SYNCED, 0);
+        Long timeStampInMillis = (long) 0;//prefs.getLong(Constants.LAST_TIME_QUESTIONS_SYNCED, 0);
 
         try {
 
@@ -218,7 +228,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 uri = QUESTIONS_DATA_URI;
                 cv = question.toContentValues();
                 selection = "question_id = ?";
-                selectionArgs = new String[]{String.valueOf(question.getId())};
+                selectionArgs = new String[]{String.valueOf(question.getQuestion_id())};
 
                 if (provider.update(uri, cv, selection, selectionArgs) == 0)
                                         provider.insert(uri, cv);
@@ -227,10 +237,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             List<Option> options = mController.getUpdatedOptionsList(timeStampInMillis);
             for (Option option : options) {
 
-                uri = QUESTIONS_DATA_URI;
+                uri = OPTIONS_DATA_URI;
                 cv = option.toContentValues();
                 selection = "option_id = ?";
-                selectionArgs = new String[]{String.valueOf(option.getId())};
+                selectionArgs = new String[]{String.valueOf(option.getOptionId())};
 
                 if (provider.update(uri, cv, selection, selectionArgs) == 0)
                     provider.insert(uri, cv);
@@ -253,7 +263,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         uri = CHECKINS_DATA_URI;
         selection = "_ID = ?";
-        selectionArgs = new String[]{this.uri.getLastPathSegment()};
+        selectionArgs = new String[]{this.mUri.getLastPathSegment()};
 
         try {
             // checkins not yet synced query
@@ -265,7 +275,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                             null);
 
             // if cursor not empty
-            if (cursor.moveToFirst()) {
+            if (cursor != null && cursor.moveToFirst()) {
 
                 // get ID of checkin in local db
                 int checkin_id = cursor.getInt(cursor

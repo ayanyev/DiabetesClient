@@ -19,35 +19,45 @@ package org.coursera.capstone.t1dteensclient.client;
 
 
 import org.coursera.capstone.t1dteensclient.entities.User;
+import java.util.List;
 
 public class RequestResult {
 
-	public enum UserState {
-		ADDED, UPDATED, CONFLICT, DELETED, SERVER_ERROR, FAILED_TO_CONNECT_TO_SERVER
+	public enum Message {
+		OK, ADDED, UPDATED, CONFLICT, DELETED,
+		SERVER_ERROR, USER_ACTIVE, USER_NOT_FOUND,
+		WRONG_PASSWORD, FAILED_TO_CONNECT_TO_SERVER
 	}
 
-	private UserState state;
+	private Message message;
 	private User user;
+	private List<User> users;
 
 	public RequestResult() {
 	}
 
-	public RequestResult(UserState state) {
-		this.state = state;
+	public RequestResult(Message message) {
+		this.message = message;
 	}
 
-	public RequestResult(UserState state, User user) {
+	public RequestResult(Message message, User user) {
 		super();
-		this.state = state;
+		this.message = message;
 		this.user = user;
 	}
 
-	public UserState getState() {
-		return state;
+	public RequestResult(Message message, List<User> users) {
+		super();
+		this.message = message;
+		this.users = users;
 	}
 
-	public void setState(UserState state) {
-		this.state = state;
+	public Message getMessage() {
+		return message;
+	}
+
+	public void setMessage(Message message) {
+		this.message = message;
 	}
 
 	public User getUser() {
@@ -56,5 +66,13 @@ public class RequestResult {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public List<User> getUsers() {
+		return users;
+	}
+
+	public void setUsers(List<User> users) {
+		this.users = users;
 	}
 }

@@ -1,26 +1,22 @@
 package org.coursera.capstone.t1dteensclient.common;
 
 import android.app.DatePickerDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.ListView;
 
 import org.coursera.capstone.t1dteensclient.R;
-import org.coursera.capstone.t1dteensclient.activities.CheckinsFragment;
+import org.coursera.capstone.t1dteensclient.activities.CheckinsListFragment;
 import org.coursera.capstone.t1dteensclient.activities.LoginFragment;
 import org.coursera.capstone.t1dteensclient.activities.MainFragment;
 import org.coursera.capstone.t1dteensclient.activities.PreferencesFragment;
@@ -29,7 +25,7 @@ import org.coursera.capstone.t1dteensclient.entities.User;
 
 public class GenericActivity extends LifecycleLoggingActivity
         implements DatePickerDialog.OnDateSetListener,
-                    GenericFragment.FragmentCallbacks {
+                    GenericListFragment.FragmentCallbacks {
 
     private static final int HOME_FRAGMENT = 0;
     private static final int CHECKINS_FRAGMENT = 1;
@@ -131,7 +127,7 @@ public class GenericActivity extends LifecycleLoggingActivity
                 case HOME_FRAGMENT:
                     fragment = new MainFragment();
                 case CHECKINS_FRAGMENT:
-                    fragment = new CheckinsFragment();
+                    fragment = new CheckinsListFragment();
                 case SUBSCRIPTIONS_FRAGMENT:
                     fragment = new SubscriptionsFragment();
                 case PREFERENCES_FRAGMENT:
@@ -142,7 +138,7 @@ public class GenericActivity extends LifecycleLoggingActivity
                     fragment = new LoginFragment();
             }
 
-            getFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_frame, fragment)
                     .commit();
 
@@ -163,12 +159,6 @@ public class GenericActivity extends LifecycleLoggingActivity
 
     }
 
-    public void showDatePickerDialog(View v) {
-
-//      shows Date Picker dialog
-        DatePickerFragment dialog = new DatePickerFragment();
-        dialog.show(getFragmentManager(), "datePicker");
-    }
 
 
 }

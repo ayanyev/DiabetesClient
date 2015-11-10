@@ -27,8 +27,15 @@ public class User {
     private Date timestamp;
     private List<CheckIn> checkIns = new ArrayList<>();
 
+
     public User() {
 
+    }
+
+    public User(String username, String password) {
+
+        this.username = username;
+        this.password = password;
         this.enabled = true;
     }
 

@@ -1,63 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="org.coursera.capstone.t1dteensclient">
+    package="org.coursera.capstone.t1dteensclient" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Account Manager permissions -->
-    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <!-- Sync Adapter permissions -->
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
     <application
         android:allowBackup="true"
+        android:debuggable="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/MyMaterial"
-        android:debuggable="true"
-        tools:ignore="HardcodedDebugMode">
+        android:theme="@style/AppTheme"
+        tools:ignore="HardcodedDebugMode" >
 
-        <activity android:name="org.coursera.capstone.t1dteensclient.activities.MainActivity"
-            android:label="@string/app_name">
+        <!-- ACTIVITIES -->
+
+        <activity
+            android:name=".activities.LoginActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_login"
+            android:theme="@style/FullscreenTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activities.MainActivity"
+            android:label="@string/app_name" >
+        </activity>
+
+        <!-- PROVIDERS -->
 
         <provider
-            android:name="org.coursera.capstone.t1dteensclient.provider.ServiceContentProvider"
+            android:name=".provider.ServiceContentProvider"
             android:authorities="@string/contentAuthority"
-            android:syncable="true"
-            android:exported="false" />
+            android:exported="false"
+            android:syncable="true" />
 
-        <service
-            android:name=".auth.AuthenticatorService">
+        <!-- SERVICES -->
+
+        <service android:name=".auth.AuthenticatorService" >
             <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator"/>
+                <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
-
         <service
             android:name=".sync.SyncService"
             android:exported="true"
-            android:process=":sync">
+            android:process=":sync" >
             <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
+                <action android:name="android.content.SyncAdapter" />
             </intent-filter>
-            <meta-data android:name="android.content.SyncAdapter"
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
+
+        <activity
+            android:name=".activities.CheckinActivity"
+            android:label="@string/title_activity_checkin" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

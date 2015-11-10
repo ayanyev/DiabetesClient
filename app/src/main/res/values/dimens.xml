@@ -6,7 +6,7 @@
     <dimen name="listItemPaddingLeft">16dp</dimen>
     <dimen name="listItemPaddingRight">16dp</dimen>
     <dimen name="listItemTextPaddingLeft">72dp</dimen>
-    <dimen name="listItemTextPaddingTopBottom">20dp</dimen>
+    <dimen name="listItemTextPaddingTopBottom">16dp</dimen>
     <dimen name="card_margin">8dp</dimen>
     <dimen name="card_elevation">4dp</dimen>
     <dimen name="primary_text">16sp</dimen>

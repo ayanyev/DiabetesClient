@@ -1,6 +1,8 @@
 package org.coursera.capstone.t1dteensclient.client;
 
 import org.coursera.capstone.t1dteensclient.entities.*;
+import org.coursera.capstone.t1dteensclient.entities.enums.UserType;
+
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
@@ -11,25 +13,16 @@ import java.util.List;
 
 public interface T1DteensSvcApi {
 
-	public static final String DATA_PARAMETER = "data";
-
-	public static final String ID_PARAMETER = "id";
-
-	public static final String TOKEN_PATH = "/oauth/token";
-
-	// The path where we expect the VideoSvc to live
-	public static final String VIDEO_SVC_PATH = "/video";
-
-	// The path where we expect the VideoSvc to live
-	public static final String VIDEO_DATA_PATH = VIDEO_SVC_PATH + "/{"+ T1DteensSvcApi.ID_PARAMETER+"}/data";
-
 	// USERS
 	
-	@GET("/users")
-	public Collection<User> getUserList();
+	@GET("/users/type/{type}")
+	public RequestResult getUserList(@Path("type") UserType userType);
 	
 	@GET("/users/{id}")
 	public User getUserById(@Path("id") long id);
+
+	@POST("/users/bycredentials")
+	public RequestResult getUserByCredentials(@Body User user);
 	
 	@POST("/users")
 	public RequestResult addUser(@Body User user);
@@ -56,18 +49,19 @@ public interface T1DteensSvcApi {
 
 	// QUESTIONS
 
-	@GET("/questions")
-	public List<Question> getQuestionsList(@Body Long timeStampInMIllis);
+	@GET("/questions/{timestamp}")
+	public List<Question> getQuestionsList(@Path("timestamp") Long timeStampInMillis);
 
 	//OPTIONS
 
-	@GET("/options")
-	public List<Option> getOptionsList(@Body Long timeStampInMIllis);
+	@GET("/options/{timestamp}")
+	public List<Option> getOptionsList(@Path("timestamp") Long timeStampInMillis);
 
 	//RELATIONS
 
-	@GET("/relations")
-	List<Relation> getRelationsList(Long timeStampInMillis);
+	@GET("/relations/{timestamp}/{userid}")
+	List<Relation> getRelationsList(@Path("timestamp") Long timeOfLastSync,
+									@Path("userid") Long userId);
 
 	@POST("/relations")
 	public Relation addRelation(@Body Relation relation);

@@ -3,14 +3,12 @@ package org.coursera.capstone.t1dteensclient.activities;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.DatePickerDialog;
-import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,36 +19,34 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.ListView;
+import android.widget.TextView;
+
 import org.coursera.capstone.t1dteensclient.Constants;
 import org.coursera.capstone.t1dteensclient.R;
-import org.coursera.capstone.t1dteensclient.common.GenericFragment;
+import org.coursera.capstone.t1dteensclient.Utils;
+import org.coursera.capstone.t1dteensclient.common.GenericListFragment;
 import org.coursera.capstone.t1dteensclient.common.LifecycleLoggingActivity;
-import org.coursera.capstone.t1dteensclient.entities.Answer;
-import org.coursera.capstone.t1dteensclient.entities.CheckIn;
 import org.coursera.capstone.t1dteensclient.entities.User;
-import org.coursera.capstone.t1dteensclient.entities.enums.CheckInStatus;
 import org.coursera.capstone.t1dteensclient.provider.ContentProviderObserver;
 import org.coursera.capstone.t1dteensclient.provider.ServiceContract;
 import org.coursera.capstone.t1dteensclient.sync.SyncAdapter;
 
 public class MainActivity extends LifecycleLoggingActivity implements DatePickerDialog.OnDateSetListener,
-        GenericFragment.FragmentCallbacks {
+        GenericListFragment.FragmentCallbacks {
+
 
     private final String TAG = getClass().getSimpleName();
-    SharedPreferences prefs;
-    String loggedAs;
     Account mAccount;
     ContentResolver mResolver;
     ContentProviderObserver observer;
-    SyncAdapter mSyncAdapter;
     Fragment mFragment;
 
-    ///////
+    private static final String FRAGMENT_TAG = "This is fragment";
     private static final int HOME_FRAGMENT = 0;
     private static final int CHECKINS_FRAGMENT = 1;
     private static final int SUBSCRIPTIONS_FRAGMENT = 2;
     private static final int PREFERENCES_FRAGMENT = 3;
-    private static final int LOGOUT_FRAGMENT = 4;
+    private static final int LOGOUT = 4;
     public static final int LOGIN_FRAGMENT = 5;
 
     private DrawerLayout mDrawerLayout;
@@ -59,95 +55,60 @@ public class MainActivity extends LifecycleLoggingActivity implements DatePicker
     private CharSequence mTitle;
     private CharSequence mDrawerTitle;
     private ActionBarDrawerToggle mDrawerToggle;
-    ///////
+    private Context mContext;
+    private TextView login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // check if user is logged in
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mContext = getApplicationContext();
 
-        // TODO. REMOVE AFTER TESTING DONE
-        prefs.edit().putString("username", "teen2")
-                    .putString("password", "2222")
-                    .commit();
-        loggedAs = prefs.getString("username", "guest");
+        // TODO remove after testing
+        login = (TextView) findViewById(R.id.currentLogin);
+        login.setText(Utils.getCurrentUserName(this).toUpperCase());
 
-        if (loggedAs.equals("guest")) {
+        mResolver = getContentResolver();
+        mAccount = CreateSyncAccount(this);
+        observer = new ContentProviderObserver(new Handler(), mAccount);
+        mResolver.registerContentObserver(ServiceContract.DATABASE_URI, true, observer);
 
-            setFragment(LOGIN_FRAGMENT);
+        ////////
+        mTitle = getTitle();
+        mDrawerTitle = getResources().getString(R.string.app_name);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-        } else {
+        // sets the adapter for the drawer's menu
+        mMenuItems = getResources().getStringArray(R.array.drawer_items_array);
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        mDrawerList.setAdapter(new ArrayAdapter<>(this,
+                R.layout.drawer_list_item, mMenuItems));
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-            mResolver = getContentResolver();
-            mAccount = CreateSyncAccount(this);
-            observer = new ContentProviderObserver(new Handler(), mAccount);
-            mResolver.registerContentObserver(ServiceContract.CHECKINS_DATA_URI, true, observer);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
-            ////////
-            mTitle = getTitle();
-            mDrawerTitle = getResources().getString(R.string.app_name);
-            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-            mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.string.drawer_open, R.string.drawer_close) {
 
-            // sets the adapter for the drawer's menu
-            mMenuItems = getResources().getStringArray(R.array.drawer_items_array);
-            mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-            mDrawerList.setAdapter(new ArrayAdapter<>(this,
-                    R.layout.drawer_list_item, mMenuItems));
-            mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-            getActionBar().setHomeButtonEnabled(true);
-
-            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                    R.string.drawer_open, R.string.drawer_close) {
-
-                public void onDrawerClosed(View view) {
-                    getActionBar().setTitle(mTitle);
-                    invalidateOptionsMenu();
-                }
-
-                public void onDrawerOpened(View drawerView) {
-                    getActionBar().setTitle(mDrawerTitle);
-                    invalidateOptionsMenu();
-                }
-            };
-
-            mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-            if (savedInstanceState == null) {
-                setFragment(HOME_FRAGMENT);
+            public void onDrawerClosed(View view) {
+                getSupportActionBar().setTitle(mTitle);
+                invalidateOptionsMenu();
             }
-            ////////
 
-            CheckIn ci1 = new CheckIn();
-            Answer a1 = new Answer(1);
-            a1.setQuestionId(1);
-            Answer a2 = new Answer(2);
-            a1.setQuestionId(2);
+            public void onDrawerOpened(View drawerView) {
+                getSupportActionBar().setTitle(mDrawerTitle);
+                invalidateOptionsMenu();
+            }
+        };
 
-            ci1.getAnswers().add(a1);
-            ci1.getAnswers().add(a2);
-            ci1.setStatus(CheckInStatus.PASSED);
-            ci1.setUser_id((long) 4);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-            ci1.saveIt(getApplicationContext());
-
-/*            CheckIn ci2 = new CheckIn();
-            Answer a3 = new Answer(1);
-            a3.setQuestionId(1);
-            Answer a4 = new Answer(2);
-            a4.setQuestionId(2);
-
-            ci2.getAnswers().add(a3);
-            ci2.getAnswers().add(a4);
-            ci2.setStatus(CheckInStatus.SKIPPED);
-            ci2.setUser_id((long) 4);
-
-            ci2.saveIt(getApplicationContext());*/
+        // TODO change starting frame
+        if (savedInstanceState == null) {
+            setFragment(CHECKINS_FRAGMENT);
         }
     }
 
@@ -155,12 +116,10 @@ public class MainActivity extends LifecycleLoggingActivity implements DatePicker
     public void onRegister(User user) {
 //        super.onRegister(user);
 
-        prefs.edit().putString("username", user.getUsername())
-                .putString("password", user.getPassword())
-                .apply();
+        Utils.rememberCurrentUserCredentials(mContext, user);
 
         mFragment = new MainFragment();
-        getFragmentManager().beginTransaction()
+        getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, mFragment)
                 .commit();
     }
@@ -182,16 +141,21 @@ public class MainActivity extends LifecycleLoggingActivity implements DatePicker
         Account newAccount = new Account(Constants.ACCOUNT, Constants.ACCOUNT_TYPE);
         // Get an instance of the Android account manager
         AccountManager accountManager =
-                (AccountManager) context.getSystemService(ACCOUNT_SERVICE);
+                (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
 
         if (accountManager.addAccountExplicitly(newAccount, null, null)) {
 
             ContentResolver.setSyncAutomatically(newAccount, ServiceContract.AUTHORITY, true);
 
+/*            ContentResolver.addPeriodicSync(
+                    newAccount,
+                    ServiceContract.AUTHORITY,
+                    Bundle.EMPTY,
+                    SYNC_INTERVAL);*/
+
         } else {
 
         }
-
         return newAccount;
     }
 
@@ -238,7 +202,13 @@ public class MainActivity extends LifecycleLoggingActivity implements DatePicker
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) {
 
-            setFragment(position);
+            if (position == LOGOUT) {
+
+                Utils.setGuestUserCredentials(mContext);
+                finish();
+
+            } else
+                setFragment(position);
         }
     }
 
@@ -252,7 +222,7 @@ public class MainActivity extends LifecycleLoggingActivity implements DatePicker
                 fragment = new MainFragment();
                 break;
             case CHECKINS_FRAGMENT:
-                fragment = new CheckinsFragment();
+                fragment = new CheckinsListFragment();
                 break;
             case SUBSCRIPTIONS_FRAGMENT:
                 fragment = new SubscriptionsFragment();
@@ -260,26 +230,17 @@ public class MainActivity extends LifecycleLoggingActivity implements DatePicker
             case PREFERENCES_FRAGMENT:
                 fragment = new PreferencesFragment();
                 break;
-            case LOGOUT_FRAGMENT:
-                break;
             case LOGIN_FRAGMENT:
                 fragment = new LoginFragment();
                 break;
         }
-
-        getFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, fragment)
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_frame, fragment, FRAGMENT_TAG)
                 .commit();
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
         mTitle = mMenuItems[position];
         mDrawerLayout.closeDrawer(mDrawerList);
-    }
-
-
-    @Override
-    public void setTitle(CharSequence title) {
-        getActionBar().setTitle(title);
     }
 }

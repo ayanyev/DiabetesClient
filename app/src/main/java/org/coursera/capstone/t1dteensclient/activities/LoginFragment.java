@@ -2,17 +2,12 @@ package org.coursera.capstone.t1dteensclient.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.Fragment;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.view.LayoutInflater;
@@ -27,7 +22,7 @@ import android.widget.Toast;
 import org.coursera.capstone.t1dteensclient.Constants;
 import org.coursera.capstone.t1dteensclient.R;
 import org.coursera.capstone.t1dteensclient.client.RequestResult;
-import org.coursera.capstone.t1dteensclient.common.GenericFragment;
+import org.coursera.capstone.t1dteensclient.common.GenericListFragment;
 import org.coursera.capstone.t1dteensclient.controllers.SvcController;
 import org.coursera.capstone.t1dteensclient.entities.User;
 import org.coursera.capstone.t1dteensclient.entities.enums.UserGender;
@@ -39,7 +34,7 @@ import java.text.SimpleDateFormat;
 
 import retrofit.RetrofitError;
 
-public class LoginFragment extends GenericFragment
+public class LoginFragment extends GenericListFragment
         implements DatePickerDialog.OnDateSetListener {
 
     private EditText mUsername, mPassword, mFirstName, mLastName, mDateOfBirth, mMedRecord;
@@ -128,7 +123,7 @@ public class LoginFragment extends GenericFragment
             try {
                 return mController.register(params[0]);
             } catch (RetrofitError retrofitError) {
-                return new RequestResult(RequestResult.UserState.FAILED_TO_CONNECT_TO_SERVER, null);
+                return new RequestResult(RequestResult.Message.FAILED_TO_CONNECT_TO_SERVER, (User) null);
             }
         }
 
@@ -137,7 +132,7 @@ public class LoginFragment extends GenericFragment
 
             User user = result.getUser();
 
-            if (result.getState() == RequestResult.UserState.CONFLICT) {
+            if (result.getMessage() == RequestResult.Message.CONFLICT) {
 
                 TextInputLayout username = (TextInputLayout) mActivity.findViewById(R.id.username_layout);
                 username.setError("username '" + user.getUsername() + "' already exists");
@@ -145,7 +140,7 @@ public class LoginFragment extends GenericFragment
 
                 showProgress(false);
 
-            } else if (result.getState() == RequestResult.UserState.SERVER_ERROR) {
+            } else if (result.getMessage() == RequestResult.Message.SERVER_ERROR) {
 
                 showProgress(false);
 
@@ -153,7 +148,7 @@ public class LoginFragment extends GenericFragment
                         "Registration failed",
                         Toast.LENGTH_LONG).show();
 
-            } else if (result.getState() == RequestResult.UserState.FAILED_TO_CONNECT_TO_SERVER) {
+            } else if (result.getMessage() == RequestResult.Message.FAILED_TO_CONNECT_TO_SERVER) {
 
                 showProgress(false);
 
@@ -161,7 +156,7 @@ public class LoginFragment extends GenericFragment
                         "Failed to connect to server\nCheck internet connection",
                         Toast.LENGTH_LONG).show();
 
-            } else if (result.getState() == RequestResult.UserState.ADDED) {
+            } else if (result.getMessage() == RequestResult.Message.ADDED) {
 
                 showProgress(false);
 

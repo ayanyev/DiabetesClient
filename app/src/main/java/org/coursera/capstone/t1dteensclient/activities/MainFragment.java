@@ -3,6 +3,7 @@ package org.coursera.capstone.t1dteensclient.activities;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,7 @@ import org.coursera.capstone.t1dteensclient.R;
 
 import java.util.Locale;
 
-public class MainFragment extends android.app.Fragment {
+public class MainFragment extends Fragment {
 
     @Nullable
     @Override
