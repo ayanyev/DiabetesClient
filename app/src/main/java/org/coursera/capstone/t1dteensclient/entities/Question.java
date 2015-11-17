@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -17,6 +18,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static org.coursera.capstone.t1dteensclient.provider.ServiceContract.*;
 
@@ -29,9 +31,23 @@ public class Question implements  EntityInterface, Parcelable {
     private String text;
     private AnswerType answerType;
     private Boolean required;
+    private Boolean rateable;
     private int order;
     private Date timestamp;
     private List<Option> options = new ArrayList<>();
+
+    public Question() {
+        this._id = null;
+    }
+
+
+    public Boolean getRateable() {
+        return rateable;
+    }
+
+    public void setRateable(Boolean rateable) {
+        this.rateable = rateable;
+    }
 
     public int getOrder() {
         return order;
@@ -39,10 +55,6 @@ public class Question implements  EntityInterface, Parcelable {
 
     public void setOrder(int order) {
         this.order = order;
-    }
-
-    public Question() {
-        this._id = null;
     }
 
     public Long get_id() {
@@ -164,6 +176,45 @@ public class Question implements  EntityInterface, Parcelable {
         return 0;
     }
 
+    public Question loadOptions(final Context context) {
+
+        final long questionId = this.get_id();
+
+        if(this.getAnswerType() == AnswerType.OPTIONS) {
+
+            try {
+                this.options = (new AsyncTask<Void, Void, List<Option>>() {
+                    @Override
+                    protected List<Option> doInBackground(Void... params) {
+
+                        List<Option> optionListList = new ArrayList<>();
+
+                        // gets current options for question
+                        Cursor options = context.getContentResolver()
+                                .query(OPTIONS_DATA_URI,
+                                        null,
+                                        QUESTIONS_COLUMN_QUESTION_ID + " = ?",
+                                        new String[]{String.valueOf(questionId)},
+                                        null);
+
+                        if (options != null && options.moveToFirst()) {
+                            while (!options.isAfterLast()) {
+                                optionListList.add((new Option()).fromCursorToPOJO(options));
+                                options.moveToNext();
+                            }
+                            return optionListList;
+                        } else
+                            return null;
+                    }
+                }.execute()).get();
+
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
 
     @Override
     public int describeContents() {
@@ -204,4 +255,6 @@ public class Question implements  EntityInterface, Parcelable {
             return new Question[size];
         }
     };
+
+
 }

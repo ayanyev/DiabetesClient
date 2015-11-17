@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
     <application
         android:allowBackup="true"
         android:debuggable="true"
@@ -38,6 +40,19 @@
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name=".activities.CheckinActivity"
+            android:label="@string/title_activity_checkin"
+            android:parentActivityName=".activities.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivity"/>
         </activity>
 
         <!-- PROVIDERS -->
@@ -72,15 +87,19 @@
                 android:resource="@xml/syncadapter" />
         </service>
 
-        <activity
-            android:name=".activities.CheckinActivity"
-            android:label="@string/title_activity_checkin" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <!-- RECEIVERS -->
 
-                <category android:name="android.intent.category.LAUNCHER" />
+        <receiver android:name=".receivers.AlarmReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="org.coursera.capstone.t1dteensclient.action.SETALARM"/>
+                <action android:name="org.coursera.capstone.t1dteensclient.action.STOPALARMS"/>
+                <action android:name="org.coursera.capstone.t1dteensclient.action.STARTALARMS"/>
+                <action android:name="org.coursera.capstone.t1dteensclient.action.STARTNOTIFICATION"/>
             </intent-filter>
-        </activity>
+        </receiver>
+
     </application>
 
 </manifest>

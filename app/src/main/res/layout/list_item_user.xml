@@ -1,91 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/userListItem"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/card_margin"
-    android:descendantFocusability="blocksDescendants"
-    android:elevation="@dimen/card_elevation">
+    android:layout_height="match_parent"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:orientation="vertical">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/userListItem"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:minHeight="@dimen/listItemHeight"
-        android:orientation="vertical"
-        android:background="@color/background_material_light">
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/card_margin"
+        android:descendantFocusability="blocksDescendants"
+        card_view:cardElevation="3dp"
+        card_view:cardCornerRadius="5dp">
 
-        <ImageView
-            android:id="@+id/userListItem_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="false"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="false"
-            android:contentDescription="checkin status"
-            android:paddingLeft="@dimen/listItemPaddingLeft"
-            android:layout_centerVertical="true"
-            android:layout_alignParentStart="false"
-            android:layout_alignParentRight="false"
-            android:src="@drawable/account" />
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background_material_light"
+            android:minHeight="@dimen/listItemHeight"
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="FULLNAME"
-            android:id="@+id/userListItem_fullName"
-            android:layout_alignParentLeft="true"
-            android:paddingLeft="@dimen/listItemTextPaddingLeft"
-            android:paddingTop="@dimen/listItemTextPaddingTopBottom"
-            android:textSize="@dimen/primary_text"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
+            <ImageView
+                android:id="@+id/userListItem_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="false"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="false"
+                android:layout_alignParentStart="false"
+                android:layout_alignParentTop="false"
+                android:layout_centerVertical="true"
+                android:contentDescription="checkin status"
+                android:paddingLeft="@dimen/listItemPaddingLeft"
+                android:src="@drawable/account" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="userType"
-            android:id="@+id/userListItem_type"
-            android:layout_alignParentLeft="false"
-            android:paddingTop="@dimen/listItemTextPaddingTopBottom"
-            android:paddingLeft="5dp"
-            android:layout_toRightOf="@+id/userListItem_fullName"
-            android:layout_alignBottom="@+id/userListItem_fullName" />
+            <TextView
+                android:id="@+id/userListItem_fullName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:paddingLeft="@dimen/listItemTextPaddingLeft"
+                android:paddingTop="@dimen/listItemTextPaddingTopBottom"
+                android:text="FULLNAME"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                android:textSize="@dimen/primary_text" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0 checkins"
-            android:id="@+id/userListItem_checkins"
-            android:layout_alignParentLeft="true"
-            android:paddingLeft="@dimen/listItemTextPaddingLeft"
-            android:layout_below="@+id/userListItem_fullName"
-            android:textSize="@dimen/secondary_text" />
+            <TextView
+                android:id="@+id/userListItem_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/userListItem_fullName"
+                android:layout_alignParentLeft="false"
+                android:layout_toRightOf="@+id/userListItem_fullName"
+                android:paddingLeft="5dp"
+                android:paddingTop="@dimen/listItemTextPaddingTopBottom"
+                android:text="userType"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="since 25/05/2015"
-            android:id="@+id/userListItem_since"
-            android:layout_alignParentLeft="false"
-            android:layout_below="@+id/userListItem_fullName"
-            android:textSize="@dimen/secondary_text"
-            android:layout_toRightOf="@+id/userListItem_checkins"
-            android:paddingLeft="5dp" />
+            <TextView
+                android:id="@+id/userListItem_checkins"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/userListItem_fullName"
+                android:paddingLeft="@dimen/listItemTextPaddingLeft"
+                android:text="0 checkins"
+                android:textSize="@dimen/secondary_text" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Follow"
-            android:id="@+id/userListItem_followButton"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="@dimen/listItemPaddingRight"
-            android:layout_centerVertical="true"
-            android:background="@drawable/bg_button"
-            android:textColor="@color/abc_primary_text_material_light"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/userListItem_since"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="false"
+                android:layout_below="@+id/userListItem_fullName"
+                android:layout_toRightOf="@+id/userListItem_checkins"
+                android:paddingLeft="5dp"
+                android:text="since 25/05/2015"
+                android:textSize="@dimen/secondary_text" />
 
-    </RelativeLayout>
+            <Button
+                android:id="@+id/userListItem_followButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/listItemPaddingRight"
+                android:background="@drawable/bg_button"
+                android:text="Follow"
+                android:textColor="@color/abc_primary_text_material_light"
+                android:textStyle="bold" />
 
-</android.support.v7.widget.CardView>
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+</LinearLayout>

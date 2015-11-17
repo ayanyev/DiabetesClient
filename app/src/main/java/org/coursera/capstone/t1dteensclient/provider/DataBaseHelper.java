@@ -41,6 +41,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     + " INTEGER, "
                     + ServiceContract.ANSWERS_COLUMN_TEXT
                     + " TEXT, "
+                    + ServiceContract.ANSWERS_COLUMN_VALUE
+                    + " INTEGER, "
                     + ServiceContract.ANSWERS_COLUMN_CHECKIN_ID
                     + " INTEGER, "
                     + ServiceContract.ANSWERS_COLUMN_QUESTION_ID
@@ -61,6 +63,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     + ServiceContract.QUESTIONS_COLUMN_ANSWER_TYPE
                     + " TEXT, "
                     + ServiceContract.QUESTIONS_COLUMN_REQUIRED
+                    + " INTEGER,"
+                    + ServiceContract.QUESTIONS_COLUMN_RATEABLE
                     + " INTEGER,"
                     + ServiceContract.QUESTIONS_COLUMN_ORDER
                     + " INTEGER,"

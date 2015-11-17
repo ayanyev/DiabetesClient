@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
+import org.coursera.capstone.t1dteensclient.Utils;
 import org.joda.time.DateTime;
 
 import java.util.Calendar;
@@ -28,6 +29,7 @@ public class TimePickerFragment extends DialogFragment
                 DateFormat.is24HourFormat(getActivity()));
     }
 
+    @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
         int viewId = getArguments().getInt("timeView");
@@ -35,9 +37,6 @@ public class TimePickerFragment extends DialogFragment
 
         DateTime time = new DateTime(2015, 1, 1, hourOfDay, minute);
 
-        if (DateFormat.is24HourFormat(getActivity()))
-            timeView.setText(time.toString("H:mm"));
-        else
-            timeView.setText(time.toString("h:mm a"));
+        timeView.setText(Utils.timestampToTime(getActivity(), time.toDate()));
     }
 }

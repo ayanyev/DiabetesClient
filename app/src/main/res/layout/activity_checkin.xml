@@ -1,7 +1,16 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/checkin_fragment"
-    android:name="org.coursera.capstone.t1dteensclient.activities.CheckinActivityFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:layout="@layout/fragment_checkin" />
+    tools:context="org.coursera.capstone.t1dteensclient.activities.CheckinActivity">
+
+    <FrameLayout
+        android:id="@+id/checkin_activity_content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+    </FrameLayout>
+
+</RelativeLayout>

@@ -1,16 +1,15 @@
 package org.coursera.capstone.t1dteensclient.activities;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.DatePickerDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
+import android.preference.PreferenceFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,28 +20,23 @@ import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.coursera.capstone.t1dteensclient.Constants;
 import org.coursera.capstone.t1dteensclient.R;
 import org.coursera.capstone.t1dteensclient.Utils;
 import org.coursera.capstone.t1dteensclient.common.GenericListFragment;
 import org.coursera.capstone.t1dteensclient.common.LifecycleLoggingActivity;
 import org.coursera.capstone.t1dteensclient.entities.User;
-import org.coursera.capstone.t1dteensclient.provider.ContentProviderObserver;
-import org.coursera.capstone.t1dteensclient.provider.ServiceContract;
-import org.coursera.capstone.t1dteensclient.sync.SyncAdapter;
 
-public class MainActivity extends LifecycleLoggingActivity implements DatePickerDialog.OnDateSetListener,
-        GenericListFragment.FragmentCallbacks {
+public class MainActivity extends LifecycleLoggingActivity
+        implements DatePickerDialog.OnDateSetListener,
+                    GenericListFragment.FragmentCallbacks{
 
 
     private final String TAG = getClass().getSimpleName();
-    Account mAccount;
-    ContentResolver mResolver;
-    ContentProviderObserver observer;
+
     Fragment mFragment;
 
     private static final String FRAGMENT_TAG = "This is fragment";
-    private static final int HOME_FRAGMENT = 0;
+    private static final int USER_FRAGMENT = 0;
     private static final int CHECKINS_FRAGMENT = 1;
     private static final int SUBSCRIPTIONS_FRAGMENT = 2;
     private static final int PREFERENCES_FRAGMENT = 3;
@@ -58,6 +52,10 @@ public class MainActivity extends LifecycleLoggingActivity implements DatePicker
     private Context mContext;
     private TextView login;
 
+    Fragment fragment = null;
+    private PreferenceFragment prefFragment = null;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,18 +67,13 @@ public class MainActivity extends LifecycleLoggingActivity implements DatePicker
         login = (TextView) findViewById(R.id.currentLogin);
         login.setText(Utils.getCurrentUserName(this).toUpperCase());
 
-        mResolver = getContentResolver();
-        mAccount = CreateSyncAccount(this);
-        observer = new ContentProviderObserver(new Handler(), mAccount);
-        mResolver.registerContentObserver(ServiceContract.DATABASE_URI, true, observer);
-
         ////////
         mTitle = getTitle();
         mDrawerTitle = getResources().getString(R.string.app_name);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-        // sets the adapter for the drawer's menu
+        // sets the mAdapter for the drawer's menu
         mMenuItems = getResources().getStringArray(R.array.drawer_items_array);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mDrawerList.setAdapter(new ArrayAdapter<>(this,
@@ -108,7 +101,7 @@ public class MainActivity extends LifecycleLoggingActivity implements DatePicker
 
         // TODO change starting frame
         if (savedInstanceState == null) {
-            setFragment(CHECKINS_FRAGMENT);
+            setFragment(USER_FRAGMENT);
         }
     }
 
@@ -118,45 +111,10 @@ public class MainActivity extends LifecycleLoggingActivity implements DatePicker
 
         Utils.rememberCurrentUserCredentials(mContext, user);
 
-        mFragment = new MainFragment();
+        mFragment = new UserFragment();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, mFragment)
                 .commit();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mResolver.unregisterContentObserver(observer);
-    }
-
-    // TODO create real account not dummy
-    public static Account CreateSyncAccount(Context context) {
-
-        Account newAccount = new Account(Constants.ACCOUNT, Constants.ACCOUNT_TYPE);
-        // Get an instance of the Android account manager
-        AccountManager accountManager =
-                (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
-
-        if (accountManager.addAccountExplicitly(newAccount, null, null)) {
-
-            ContentResolver.setSyncAutomatically(newAccount, ServiceContract.AUTHORITY, true);
-
-/*            ContentResolver.addPeriodicSync(
-                    newAccount,
-                    ServiceContract.AUTHORITY,
-                    Bundle.EMPTY,
-                    SYNC_INTERVAL);*/
-
-        } else {
-
-        }
-        return newAccount;
     }
 
     @Override
@@ -214,29 +172,60 @@ public class MainActivity extends LifecycleLoggingActivity implements DatePicker
 
     private void setFragment(int position) {
 
-        Fragment fragment = null;
 
         switch (position) {
 
-            case HOME_FRAGMENT:
-                fragment = new MainFragment();
+            case USER_FRAGMENT:
+                if (prefFragment != null) getFragmentManager().beginTransaction()
+                        .remove(getFragmentManager().findFragmentById(prefFragment.getId()))
+                        .commit();
+                prefFragment = null;
+                fragment = new UserFragment();
+                getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_frame, fragment, FRAGMENT_TAG)
+                    .commit();
                 break;
             case CHECKINS_FRAGMENT:
-                fragment = new CheckinsListFragment();
+                if (prefFragment != null) getFragmentManager().beginTransaction()
+                        .remove(getFragmentManager().findFragmentById(prefFragment.getId()))
+                        .commit();
+                prefFragment = null;
+                fragment =  new CheckinsListFragment();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, fragment, FRAGMENT_TAG)
+                        .commit();
                 break;
             case SUBSCRIPTIONS_FRAGMENT:
-                fragment = new SubscriptionsFragment();
+                if (prefFragment != null) getFragmentManager().beginTransaction()
+                        .remove(getFragmentManager().findFragmentById(prefFragment.getId()))
+                        .commit();
+                prefFragment = null;
+                fragment =  new SubscriptionsFragment();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, fragment, FRAGMENT_TAG)
+                        .commit();
                 break;
             case PREFERENCES_FRAGMENT:
-                fragment = new PreferencesFragment();
+                if (fragment != null) getSupportFragmentManager().beginTransaction()
+                        .remove(getSupportFragmentManager().findFragmentById(fragment.getId()))
+                        .commit();
+                fragment = null;
+                prefFragment = new PreferencesFragment();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, prefFragment)
+                        .commit();
                 break;
             case LOGIN_FRAGMENT:
-                fragment = new LoginFragment();
+                if (prefFragment != null) getFragmentManager().beginTransaction()
+                        .remove(getFragmentManager().findFragmentById(prefFragment.getId()))
+                        .commit();
+                prefFragment = null;
+                fragment =  new LoginFragment();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, fragment, FRAGMENT_TAG)
+                        .commit();
                 break;
         }
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, fragment, FRAGMENT_TAG)
-                .commit();
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);

@@ -1,46 +1,62 @@
 package org.coursera.capstone.t1dteensclient.activities;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.melnykov.fab.FloatingActionButton;
+
+import org.coursera.capstone.t1dteensclient.Constants;
 import org.coursera.capstone.t1dteensclient.R;
 import org.coursera.capstone.t1dteensclient.Utils;
 import org.coursera.capstone.t1dteensclient.adapters.CheckinsListAdapter;
-import org.coursera.capstone.t1dteensclient.common.GenericListFragment;
 import org.coursera.capstone.t1dteensclient.common.GenericLoaderFragment;
 import org.coursera.capstone.t1dteensclient.entities.CheckIn;
-import org.coursera.capstone.t1dteensclient.provider.ServiceContract;
+import org.coursera.capstone.t1dteensclient.entities.enums.CheckInStatus;
 
 import static org.coursera.capstone.t1dteensclient.provider.ServiceContract.*;
 
 public class CheckinsListFragment extends GenericLoaderFragment {
 
     private static final int CREATE_CHECKIN = 1;
+    private static final int SHOW_CHECKIN = 2;
+
     private CheckinsListAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        ViewGroup view = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);;
+
         mAdapter = new CheckinsListAdapter(getActivity(), null, false);
         setListAdapter(mAdapter);
 
         //TODO consider where to place after the testing
-        Utils.requestSyncOnDemand(getActivity().getApplicationContext(),
-                QUESTIONS_DATA_URI);
+//        Utils.requestSyncOnDemand(getActivity().getApplicationContext(),
+//                QUESTIONS_DATA_URI);
+        //TODO consider where to place after the testing
+//        Utils.requestSyncOnDemand(getActivity().getApplicationContext(),
+//                CHECKINS_DATA_URI);
 
         setHasOptionsMenu(true);
-        return super.onCreateView(inflater, container, savedInstanceState);
+
+        addFABButton(inflater, R.drawable.plus);
+
+        return view;
     }
 
     @Override
@@ -72,6 +88,26 @@ public class CheckinsListFragment extends GenericLoaderFragment {
     }
 
     @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+
+        CheckIn checkin = mAdapter.getItem(position);
+
+        // if checkin has status PASSED start details activity
+        if (checkin.getStatus() == CheckInStatus.PASSED) {
+
+            Intent intent = new Intent(this.getActivity(), CheckinActivity.class);
+            intent.putExtra("checkin", checkin.loadAnswers(getActivity()));
+            startActivityForResult(intent, SHOW_CHECKIN);
+
+        } else if (checkin.getStatus() == CheckInStatus.SKIPPED){
+
+            Toast.makeText(getActivity(),
+                    R.string.skipped_checkin_click, Toast.LENGTH_LONG)
+                    .show();
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()){
@@ -82,8 +118,12 @@ public class CheckinsListFragment extends GenericLoaderFragment {
                 CheckIn checkin = new CheckIn();
                 checkin.setNewAnswers(getActivity());
 
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("ifAnswersAreEditable", true);
+                bundle.putParcelable("checkin", checkin);
+
                 Intent intent = new Intent(this.getActivity(), CheckinActivity.class);
-                intent.putExtra("checkin", checkin);
+                intent.putExtra("args", bundle);
                 
                 startActivityForResult(intent, CREATE_CHECKIN);
         }
@@ -101,6 +141,21 @@ public class CheckinsListFragment extends GenericLoaderFragment {
             else
                 Toast.makeText(getActivity(), R.string.checkin_save_fail, Toast.LENGTH_LONG).show();
 
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()){
+
+            case R.id.fab:
+
+                Intent intent = new Intent(this.getActivity(), CheckinActivity.class);
+                intent.setAction(Constants.NEWCHECKIN);
+
+                startActivityForResult(intent, CREATE_CHECKIN);
+                break;
         }
     }
 }

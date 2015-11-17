@@ -37,26 +37,9 @@ public class SubscriptionsListFragment extends GenericLoaderFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        ListView list;
-        FloatingActionButton fab;
-        ViewGroup view;
+        ViewGroup view = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
 
-        view = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
-
-        // fab button init
-        if (view != null) {
-
-            // inflates FAB layout to the FrameLayout containing ListView
-
-            list = (ListView) view.findViewById(android.R.id.list);
-            // parent FrameLayout
-            ViewGroup lframe = (ViewGroup) list.getParent();
-            inflater.inflate(R.layout.fab, lframe, true);
-
-            fab = (FloatingActionButton) lframe.findViewById(R.id.fab);
-            fab.attachToListView(list);
-            fab.setOnClickListener(this);
-        }
+        addFABButton(inflater, R.drawable.account_plus);
 
         return view;
     }
@@ -64,15 +47,20 @@ public class SubscriptionsListFragment extends GenericLoaderFragment
     @Override
     public void onClick(View v) {
 
-        Fragment fragment = new AddSubscriptionFragment();
-        Bundle bundle = new Bundle();
+        switch (v.getId()) {
 
-        bundle.putInt("Init key", Constants.INIT_ASYNC_TASK);
-        fragment.setArguments(bundle);
+            case R.id.fab:
 
-        getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .commit();
+                Fragment fragment = new AddSubscriptionFragment();
+                Bundle bundle = new Bundle();
+
+                bundle.putInt("Init key", Constants.INIT_ASYNC_TASK);
+                fragment.setArguments(bundle);
+
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, fragment)
+                        .commit();
+        }
     }
 
     @Override

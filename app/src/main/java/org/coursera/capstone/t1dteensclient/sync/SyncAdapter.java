@@ -9,18 +9,24 @@ import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import org.coursera.capstone.t1dteensclient.Constants;
+import org.coursera.capstone.t1dteensclient.Utils;
+import org.coursera.capstone.t1dteensclient.client.RequestResult;
 import org.coursera.capstone.t1dteensclient.controllers.SvcController;
 import org.coursera.capstone.t1dteensclient.entities.CheckIn;
 import org.coursera.capstone.t1dteensclient.entities.Option;
 import org.coursera.capstone.t1dteensclient.entities.Question;
 import org.coursera.capstone.t1dteensclient.entities.Relation;
+import org.coursera.capstone.t1dteensclient.entities.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit.RetrofitError;
+
 import static org.coursera.capstone.t1dteensclient.provider.ServiceContract.*;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
+
 
     ContentResolver mContentResolver;
     SvcController mController;
@@ -54,6 +60,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         mMatcher.addURI(AUTHORITY, QUESTIONS_TABLE_NAME, MATCH_ALL_QUESTIONS);
         mMatcher.addURI(AUTHORITY, RELATIONS_TABLE_NAME, MATCH_ALL_REATIONS);
         mMatcher.addURI(AUTHORITY, RELATIONS_TABLE_NAME + "/#", MATCH_ONE_RELATION);
+        mMatcher.addURI(AUTHORITY, USER_DETAILS, MATCH_ONE_USER);
     }
 
     @Override
@@ -64,7 +71,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                               SyncResult syncResult) {
 
         try {
-            Thread.sleep(10000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -88,10 +95,23 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             case MATCH_ONE_RELATION:
                 syncOneRelation(provider);
                 break;
-//            case MATCH_ONE_USER:
-//                syncUserDetails(provider);
+            case MATCH_ONE_USER:
+                syncUserDetails(mContext);
             default:
                 break;
+        }
+    }
+
+    private void syncUserDetails(Context context) {
+
+        User currentUser = Utils.createCurrentUser(context);
+        try {
+            RequestResult result = mController.register(currentUser);
+            if (result.getMessage() == RequestResult.Message.UPDATED)
+                Log.d(TAG, "User details sync done");
+        } catch (RetrofitError retrofitError) {
+            retrofitError.printStackTrace();
+            Log.d(TAG, "User details sync failed");
         }
     }
 
@@ -102,7 +122,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         String selection;
         String[] selectionArgs;
         Long timeOfLastSync = prefs.getLong(Constants.LAST_TIME_RELATIONS_SYNCED, 0);
-        Long timeStampInMillis = System.currentTimeMillis();
 
         try {
 
@@ -156,7 +175,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             }
 
             // sets last time of sync if sync was successfull
-            // TODO uncomment after testing
             prefs.edit().putLong(Constants.LAST_TIME_RELATIONS_SYNCED, System.currentTimeMillis()).commit();
 
             Log.d(TAG, "All_Relations sync done");
@@ -218,11 +236,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         ContentValues cv;
         String selection;
         String[] selectionArgs;
-        Long timeStampInMillis = (long) 0;//prefs.getLong(Constants.LAST_TIME_QUESTIONS_SYNCED, 0);
+        Long timeOfLastSync = prefs.getLong(Constants.LAST_TIME_QUESTIONS_SYNCED, 0);
 
         try {
 
-            List<Question> questions = mController.getUpdatedQuestionsList(timeStampInMillis);
+            List<Question> questions = mController.getUpdatedQuestionsList(timeOfLastSync);
             for (Question question : questions) {
 
                 uri = QUESTIONS_DATA_URI;
@@ -234,7 +252,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                                         provider.insert(uri, cv);
             }
 
-            List<Option> options = mController.getUpdatedOptionsList(timeStampInMillis);
+            List<Option> options = mController.getUpdatedOptionsList(timeOfLastSync);
             for (Option option : options) {
 
                 uri = OPTIONS_DATA_URI;
@@ -276,7 +294,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             // if cursor not empty
             if (cursor != null && cursor.moveToFirst()) {
-
                 // get ID of checkin in local db
                 int checkin_id = cursor.getInt(cursor
                         .getColumnIndex(CHECKINS_COLUMN_ID));
@@ -293,9 +310,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                                 selectionArgs,
                                 null);
 
-                checkin = (new CheckIn()).fromCursorToPOJO(cursor, cursor.getPosition(), cursor2);
-
-                cursor2.close();
+                if (cursor2 != null) {
+                    checkin = (new CheckIn()).fromCursorToPOJO(cursor, cursor.getPosition(), cursor2);
+                    cursor2.close();
+                }
                 cursor.close();
             }
 
@@ -308,7 +326,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             cv = checkin.toContentValues();
             selectionArgs = new String[]{String.valueOf(checkin.getTimestamp().getTime())};
 
-            provider.update(uri, cv, selection, selectionArgs);
+            int result = provider.update(uri, cv, selection, selectionArgs);
 
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -324,11 +342,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         ContentValues cv;
         String selection;
         String[] selectionArgs;
-        Long timeOfLastSync = System.currentTimeMillis();
+        Long timeOfLastSync = prefs.getLong(Constants.LAST_TIME_CHECKINS_SYNCED, 0);
 
         uri = CHECKINS_DATA_URI;
         selection = "timestamp > ?";
-        selectionArgs = new String[]{String.valueOf(prefs.getLong(Constants.LAST_TIME_CHECKINS_SYNCED, 0))};
+        selectionArgs = new String[]{String.valueOf(timeOfLastSync)};
 
         // list of checkins to be sent to server
         List<CheckIn> checkins = new ArrayList<>();
@@ -342,7 +360,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                             selectionArgs,
                             null);
 
-            if (cursor.moveToFirst()) {
+            if (cursor != null && cursor.moveToFirst()) {
 
                  while (!cursor.isAfterLast()) {
 
@@ -385,13 +403,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 provider.update(uri, cv, selection, selectionArgs);
             }
 
-            prefs.edit().putLong(Constants.LAST_TIME_CHECKINS_SYNCED, timeOfLastSync).commit();
+            prefs.edit().putLong(Constants.LAST_TIME_CHECKINS_SYNCED, System.currentTimeMillis()).commit();
 
-            Log.d(TAG, "All Checkin sync done");
+            Log.d(TAG, "All Checkins sync done");
 
         } catch (RemoteException e) {
             e.printStackTrace();
-            Log.d(TAG, "All Checkin sync failed");
+            Log.d(TAG, "All Checkins sync failed");
         }
     }
 }

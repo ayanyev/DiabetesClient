@@ -96,7 +96,7 @@ public class ServiceContentProvider extends ContentProvider {
             Uri newUri = ContentUris.withAppendedId(uri, newRow);
             return newUri;
         } else {
-            throw new SQLException("Fail to add a new record into "
+             throw new SQLException("Fail to add a new record into "
                     + uri);}
 
     }

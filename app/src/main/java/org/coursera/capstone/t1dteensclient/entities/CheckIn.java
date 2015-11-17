@@ -7,14 +7,15 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.coursera.capstone.t1dteensclient.entities.enums.AnswerType;
 import org.coursera.capstone.t1dteensclient.entities.enums.CheckInStatus;
-import org.coursera.capstone.t1dteensclient.provider.ServiceContract;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ public class CheckIn implements EntityInterface, Parcelable {
     private CheckInStatus status;
     private List<Answer> answers = new ArrayList<>();
     private Date timestamp;
+
+
 
     public CheckIn() {
         this._id = null;
@@ -93,6 +96,7 @@ public class CheckIn implements EntityInterface, Parcelable {
         this.timestamp = timestamp;
     }
 
+    @JsonIgnore
     // sets new empty answers from currently available questions
     public void setNewAnswers(final Context context){
 
@@ -154,6 +158,42 @@ public class CheckIn implements EntityInterface, Parcelable {
         return cv;
     }
 
+    public CheckIn loadAnswers(final Context context) {
+
+        final Long checkinId = this.get_id();
+        if (checkinId != null) {
+            try {
+                this.answers = (new AsyncTask<Void, Void, List<Answer>>() {
+                    @Override
+                    protected List<Answer> doInBackground(Void... params) {
+
+                        List<Answer> answersList = new ArrayList<>();
+                        // gets current questions
+                        Cursor answers = context.getContentResolver()
+                                .query(ANSWERS_DATA_URI,
+                                        null,
+                                        ANSWERS_COLUMN_CHECKIN_ID + " = ?",
+                                        new String[]{String.valueOf(checkinId)},
+                                        null);
+                        if (answers != null && answers.moveToFirst()) {
+                            while (!answers.isAfterLast()) {
+                                answersList.add((new Answer()).fromCursorToPOJO(answers));
+                                answers.moveToNext();
+                            }
+                            return answersList;
+                        } else
+                            return null;
+
+                    }
+                }.execute()).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+
     @Override
     public Uri saveIt(final Context context) {
 
@@ -195,6 +235,7 @@ public class CheckIn implements EntityInterface, Parcelable {
         }
     }
 
+
     public CheckIn fromCursorToPOJO(Cursor checkins, int position, Cursor answers) {
 
         // fills CHECKIN fields from cursor
@@ -218,16 +259,17 @@ public class CheckIn implements EntityInterface, Parcelable {
 
         // if answers cursor is not empty
         if ((answers != null) && (answers.moveToFirst())) {
-            Answer answer = new Answer();
+
             while (!answers.isAfterLast()) {
 
-                this.answers.add(answer.fromCursorToPOJO(answers));
+                this.answers.add(new Answer().fromCursorToPOJO(answers));
                 answers.moveToNext();
             }
         }
 
         return this;
     }
+
 
     @Override
     public <T> int updateIt(Context context) {
@@ -297,4 +339,8 @@ public class CheckIn implements EntityInterface, Parcelable {
             return new CheckIn[size];
         }
     };
+
+    public int deleteIt(Context mContext) {
+        return 0;
+    }
 }

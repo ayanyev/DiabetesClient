@@ -74,6 +74,7 @@ public class SubscriptionsFragment extends Fragment {
     }
 
     private class PagerAdapter extends FragmentStatePagerAdapter {
+
         int mNumOfTabs;
 
         public PagerAdapter(FragmentManager fm, int NumOfTabs) {

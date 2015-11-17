@@ -40,19 +40,26 @@ public class AnswersListAdapter extends ArrayAdapter<Answer> {
     List<Answer> mAnswers;
     Context mContext;
     ViewHolder mHolder;
+    boolean mEditable;
 
-    public AnswersListAdapter(Context context, List<Answer> answers) {
+    public AnswersListAdapter(Context context, List<Answer> answers, boolean editable) {
         super(context, -1, answers);
 
         mContext = context;
         mAnswers = answers;
         mInflater = LayoutInflater.from(context);
+        mEditable = editable;
     }
 
     public void changeData(List<Answer> answers){
 
         mAnswers = answers;
         notifyDataSetChanged();
+    }
+
+    @Override
+    public Answer getItem(int position) {
+        return super.getItem(position).loadQuestion(mContext);
     }
 
     public List<Answer> getItems(){
@@ -89,7 +96,7 @@ public class AnswersListAdapter extends ArrayAdapter<Answer> {
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         Answer answer = mAnswers.get(position);
-        Question question = answer.getQuestion();
+        Question question = answer.getQuestion().loadOptions(mContext);
         int type = getItemViewType(position);
         mHolder = new ViewHolder();
 
@@ -100,24 +107,28 @@ public class AnswersListAdapter extends ArrayAdapter<Answer> {
                     convertView = mInflater.inflate(R.layout.answer_text, parent, false);
                     mHolder.question = (TextView) convertView.findViewById(R.id.questionText);
                     mHolder.answer = (EditText) convertView.findViewById(R.id.answerText);
+                    mHolder.answer.setEnabled(mEditable);
                     convertView.setTag(mHolder);
                     break;
                 case NUMBER_TYPE:
                     convertView = mInflater.inflate(R.layout.answer_number, parent, false);
                     mHolder.question = (TextView) convertView.findViewById(R.id.questionText);
                     mHolder.answer = (EditText) convertView.findViewById(R.id.answerText);
+                    mHolder.answer.setEnabled(mEditable);
                     convertView.setTag(mHolder);
                     break;
                 case OPTIONS_TYPE:
                     convertView = mInflater.inflate(R.layout.answer_option, parent, false);
                     mHolder.question = (TextView) convertView.findViewById(R.id.questionText);
                     mHolder.options = (Spinner) convertView.findViewById(R.id.answerOptions);
+                    mHolder.options.setEnabled(mEditable);
                     convertView.setTag(mHolder);
                     break;
                 case TIME_PICKER_TYPE:
                     convertView = mInflater.inflate(R.layout.answer_time, parent, false);
                     mHolder.question = (TextView) convertView.findViewById(R.id.questionText);
                     mHolder.time = (EditText) convertView.findViewById(R.id.answerTime);
+                    mHolder.time.setEnabled(mEditable);
                     convertView.setTag(mHolder);
                     break;
             }
@@ -128,7 +139,12 @@ public class AnswersListAdapter extends ArrayAdapter<Answer> {
         switch (type) {
             case TEXT_TYPE:
                 mHolder.question.setText(question.getText());
-                mHolder.answer.addTextChangedListener(new textInputOnTextChangedListener(position));
+                mHolder.answer.setText(answer.getText());
+                if (mEditable)
+                    mHolder.answer.addTextChangedListener(new textInputOnTextChangedListener(position));
+//                } else {
+//                    mHolder.answer.setText(answer.getText());
+//                }
                 break;
             case OPTIONS_TYPE:
                 mHolder.question.setText(question.getText());
@@ -139,16 +155,38 @@ public class AnswersListAdapter extends ArrayAdapter<Answer> {
                                 question.getOptions());
                 spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 mHolder.options.setAdapter(spinnerAdapter);
-                mHolder.options.setOnItemSelectedListener(new spinnerOnItemSelectedListener(position));
-
+                for (Option option : question.getOptions()){
+                    if (option.getText().equals(answer.getText())) {
+                        mHolder.options.setSelection(spinnerAdapter.getPosition(option));
+                        break;
+                    }
+                if (mEditable)
+                    mHolder.options.setOnItemSelectedListener(new spinnerOnItemSelectedListener(position));
+//                else {
+//
+//                    for (Option option : question.getOptions()){
+//                        if (option.getText().equals(answer.getText())) {
+//                            mHolder.options.setSelection(spinnerAdapter.getPosition(option));
+//                            break;
+//                        }
+//                    }
+                }
                 break;
             case TIME_PICKER_TYPE:
                 mHolder.question.setText(question.getText());
-                mHolder.time.addTextChangedListener(new textInputOnTextChangedListener(position));
+                mHolder.time.setText(answer.getText());
+                if (mEditable)
+                    mHolder.time.addTextChangedListener(new textInputOnTextChangedListener(position));
+//                else
+//                    mHolder.time.setText(answer.getText());
                 break;
             case NUMBER_TYPE:
                 mHolder.question.setText(question.getText());
-                mHolder.answer.addTextChangedListener(new textInputOnTextChangedListener(position));
+                mHolder.answer.setText(answer.getText());
+                if (mEditable)
+                    mHolder.answer.addTextChangedListener(new textInputOnTextChangedListener(position));
+//                else
+//                    mHolder.answer.setText(answer.getText());
                 break;
         }
         return convertView;
@@ -175,8 +213,6 @@ public class AnswersListAdapter extends ArrayAdapter<Answer> {
             t.setError("must not be empty");
             return false;
         }
-
-
         return true;
     }
 
@@ -200,7 +236,11 @@ public class AnswersListAdapter extends ArrayAdapter<Answer> {
         @Override
         public void afterTextChanged(Editable s) {
 
+            // updates answer text and value in reals time
+
             getItem(adapterPosition).setText(s.toString());
+            if (getItemViewType(adapterPosition) == NUMBER_TYPE && !s.toString().equals(""))
+                getItem(adapterPosition).setValue(Integer.parseInt(s.toString()));
         }
     }
 
@@ -214,8 +254,10 @@ public class AnswersListAdapter extends ArrayAdapter<Answer> {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
+            // updates answer text and value in reals time
             Option selectedOption = (Option) parent.getItemAtPosition(position);
             getItem(adapterPosition).setText(selectedOption.getText());
+            getItem(adapterPosition).setValue((int) selectedOption.getWeight());
         }
 
         @Override

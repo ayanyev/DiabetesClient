@@ -12,6 +12,7 @@ com.example.android.swiperefreshlistfragment/SwipeRefreshListFragment.html#l50
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -23,6 +24,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.FrameLayout;
@@ -46,12 +48,20 @@ import retrofit.RetrofitError;
 import static org.coursera.capstone.t1dteensclient.Constants.*;
 
 
-public class GenericListFragment extends ListFragment {
+public class GenericListFragment extends ListFragment
+        implements FloatingActionButton.OnClickListener{
 
     public SwipeRefreshLayout mSwipeRefreshLayout;
     FrameLayout mListFragmentView;
     public TextView msgView;
     public LinearLayout msgLayout;
+    public ListView mList;
+
+    // FAB button onClickListener
+    @Override
+    public void onClick(View v) {
+
+    }
 
     public interface FragmentCallbacks {
        void onRegister(User user);
@@ -69,6 +79,10 @@ public class GenericListFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         mListFragmentView = (FrameLayout) super.onCreateView(inflater, container, savedInstanceState);
+
+        mList = (ListView) mListFragmentView.findViewById(android.R.id.list);
+        mList.setDivider(null);
+        mList.setPadding(10, 5, 10, 5);
 
         // inflates message layout
         msgLayout = (LinearLayout) inflater.inflate(R.layout.message, null);
@@ -88,6 +102,17 @@ public class GenericListFragment extends ListFragment {
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
 
         return mSwipeRefreshLayout;
+    }
+
+    public void addFABButton(LayoutInflater inflater, int drawable) {
+        FloatingActionButton fab;// inflates FAB layout to the FrameLayout containing ListView
+        ViewGroup lframe = (ViewGroup) mList.getParent();
+        inflater.inflate(R.layout.fab, lframe, true);
+
+        fab = (FloatingActionButton) lframe.findViewById(R.id.fab);
+        fab.attachToListView(mList);
+        fab.setOnClickListener(this);
+        fab.setImageResource(drawable);
     }
 
     @Override

@@ -29,8 +29,6 @@ public class  SubscribersListFragment extends GenericLoaderFragment {
         setListAdapter(mAdapter);
 
         view = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
-
-
         return view;
     }
 

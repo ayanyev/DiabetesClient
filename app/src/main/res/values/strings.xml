@@ -52,4 +52,27 @@
     <string name="title_activity_checkin">CheckinActivity</string>
     <string name="action_settings">Settings</string>
     <string name="checkin_save_fail">failed to save new checkin</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="skipped_checkin_click">Skipped checkin has no details</string>
+    <string name="reminders_settings">Reminders</string>
+    <string name="user_settings">User details</string>
+    <string name="current_user_id">User id</string>
+    <string name="current_user_username">Username</string>
+    <string name="current_user_password">Password</string>
+    <string name="current_user_firstname">Your first name</string>
+    <string name="current_user_lastname">Your last name</string>
+    <string name="current_user_dob">Your date of birth</string>
+    <string name="current_user_medical_record">Your medical record number</string>
+    <string name="current_user_gender">Your gender</string>
+    <string name="current_user_type">User type you are</string>
+    <string name="share_policy_settings">Share policy</string>
+    <string name="current_user_firstname_policy">Show first name</string>
+    <string name="current_user_lastname_policy">Show last name</string>
+    <string name="current_user_dob_policy">Show date of birth</string>
+    <string name="current_user_medical_record_policy">Show medical record number</string>
+    <string name="current_user_gender_policy">Show gender</string>
+    <string name="current_user_checkins_policy">Show checkins</string>
+    <string name="User_details_summary">Add or change information about yourself</string>
+    <string name="privacy_policy_summary">Select which of your personal data you want to share with others</string>
+    <string name="reminders_summary">Select when you want to receive checkin reminders</string>
 </resources>

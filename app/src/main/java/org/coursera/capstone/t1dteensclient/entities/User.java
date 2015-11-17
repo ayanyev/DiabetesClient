@@ -12,11 +12,10 @@ import java.util.List;
 
 public class User {
 
-    private long id;
-
+    private Long id;
     private String firstName;
     private String lastName;
-    private int medicalRecord;
+    private Integer medicalRecord;
     private String username;
     private String password;
     private Boolean enabled;
@@ -26,10 +25,12 @@ public class User {
     private UserType userType;
     private Date timestamp;
     private List<CheckIn> checkIns = new ArrayList<>();
-
+    private String sharePolicy;
 
     public User() {
 
+        this.enabled = true;
+        this.sharePolicy = "111111";
     }
 
     public User(String username, String password) {
@@ -37,6 +38,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.enabled = true;
+        this.sharePolicy = "111111";
     }
 
     public User(String firstName, String lastName, int medicalRecord, String username, String password,
@@ -51,6 +53,7 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.userType = userType;
+        this.sharePolicy = "111111";
     }
 
     public String getFirstName() {
@@ -109,7 +112,7 @@ public class User {
         this.userType = userType;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -133,7 +136,7 @@ public class User {
         this.checkIns = checkIns;
     }
 
-    public int getMedicalRecord() {
+    public Integer getMedicalRecord() {
         return medicalRecord;
     }
 
@@ -145,8 +148,16 @@ public class User {
         this.timestamp = timestamp;
     }
 
-    public void setMedicalRecord(int medicalRecord) {
+    public void setMedicalRecord(Integer medicalRecord) {
         this.medicalRecord = medicalRecord;
+    }
+
+    public String getSharePolicy() {
+        return sharePolicy;
+    }
+
+    public void setSharePolicy(String sharePolicy) {
+        this.sharePolicy = sharePolicy;
     }
 
     /*    @Override

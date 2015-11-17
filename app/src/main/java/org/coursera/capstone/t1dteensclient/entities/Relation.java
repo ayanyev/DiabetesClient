@@ -22,7 +22,7 @@ import static org.coursera.capstone.t1dteensclient.provider.ServiceContract.*;
 public class Relation implements EntityInterface{
 
     @JsonIgnore
-    private long _id;
+    private Long _id;
     @JsonProperty("id")
     private Long relId;
     private long subscriber;
@@ -31,6 +31,7 @@ public class Relation implements EntityInterface{
     private Date timestamp;
 
     public Relation() {
+        this._id = null;
         this.status = RelationStatus.PENDING;
     }
 
@@ -40,11 +41,11 @@ public class Relation implements EntityInterface{
         this.status = RelationStatus.PENDING;
     }
 
-    public long get_id() {
+    public Long get_id() {
         return _id;
     }
 
-    public void set_id(long _id) {
+    public void set_id(Long _id) {
         this._id = _id;
     }
 
@@ -94,7 +95,10 @@ public class Relation implements EntityInterface{
 
         ContentValues cv = new ContentValues();
 
-        cv.put(RELATIONS_COLUMN_ID, _id);
+/*        if (_id == 0)
+            cv.putNull(RELATIONS_COLUMN_ID);
+        else*/
+            cv.put(RELATIONS_COLUMN_ID, _id);
         cv.put(RELATIONS_COLUMN_RELATION_ID, relId);
         cv.put(RELATIONS_COLUMN_SUBSCRIBER, subscriber);
         cv.put(RELATIONS_COLUMN_SUBSCRIPTION, subscription);
