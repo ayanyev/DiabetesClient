@@ -15,7 +15,7 @@ import java.security.cert.CertificateException;
  * @author jules
  *
  */
-public class UnsafeHttpsClient {
+public class HttpsClient {
 
 	public static OkHttpClient getUnsafeOkHttpClient() {
 		try {

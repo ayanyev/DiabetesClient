@@ -63,45 +63,5 @@ public class CheckinsListAdapter extends CursorAdapter {
         TextView timestamp = (TextView) view.findViewById(R.id.checkinListItem_timestamp);
         timestamp.setText(Utils.timestampToDateTime(mContext, mCheckin.getTimestamp()));
 
-//        ImageView menu = (ImageView) view.findViewById(R.id.menu);
-//        menu.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                final String[] items = {"Edit", "Delete"};
-//
-//                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-//                builder.setItems(items, new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int item) {
-//
-//                        switch (item){
-//
-//                            case 0:
-//
-//                                if (mCheckin.getStatus() == CheckInStatus.PASSED) {
-//
-//                                    Intent intent = new Intent(mContext, CheckinActivity.class);
-//                                    intent.putExtra("checkin", mCheckin.loadAnswers(mContext));
-//                                    intent.setAction(Constants.EDITCHECKIN);
-//                                    mContext.startActivity(intent);
-//
-//                                } else if (mCheckin.getStatus() == CheckInStatus.SKIPPED){
-//
-//                                    Toast.makeText(mContext,
-//                                            R.string.skipped_checkin_click, Toast.LENGTH_LONG)
-//                                            .show();
-//                                }
-//
-//                            case 1:
-//
-//                                mCheckin.deleteIt(mContext);
-//                        }
-//
-//                    }
-//                });
-//                AlertDialog alert = builder.create();
-//                alert.show();
-//            }
-//        });
     }
 }

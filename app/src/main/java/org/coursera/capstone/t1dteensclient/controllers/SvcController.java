@@ -9,8 +9,8 @@ import org.coursera.capstone.t1dteensclient.Constants;
 import org.coursera.capstone.t1dteensclient.Utils;
 import org.coursera.capstone.t1dteensclient.client.RequestResult;
 import org.coursera.capstone.t1dteensclient.client.SecuredRestBuilder;
-import org.coursera.capstone.t1dteensclient.client.T1DteensSvcApi;
-import org.coursera.capstone.t1dteensclient.client.UnsafeHttpsClient;
+import org.coursera.capstone.t1dteensclient.client.SvcApi;
+import org.coursera.capstone.t1dteensclient.client.HttpsClient;
 import org.coursera.capstone.t1dteensclient.entities.*;
 import org.coursera.capstone.t1dteensclient.entities.enums.UserType;
 
@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutionException;
 public class SvcController {
 
     private Context mContext;
-    private T1DteensSvcApi mServiceApi;
+    private SvcApi mServiceApi;
     private SharedPreferences prefs;
 
     public SvcController(Context mContext) {
@@ -44,12 +44,12 @@ public class SvcController {
                 .setPassword(password)
                 .setClientId(Constants.CLIENT_ID)
                 // TODO change for safe Http Client
-                .setClient(new OkClient(UnsafeHttpsClient.getUnsafeOkHttpClient()))
+                .setClient(new OkClient(HttpsClient.getUnsafeOkHttpClient()))
                 .setEndpoint(Constants.SERVER_URL)
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .setConverter(converter)
                 .build()
-                .create(T1DteensSvcApi.class);
+                .create(SvcApi.class);
     }
 
     public RequestResult register(final User user) throws RetrofitError{
@@ -98,6 +98,11 @@ public class SvcController {
     public List<CheckIn> bulkAddCheckins(List<CheckIn> checkin){
 
         return mServiceApi.bulkAddCheckins(checkin);
+    }
+
+    public List<CheckIn> getCheckins(long userId, long timeStampInMillis){
+
+        return mServiceApi.getCheckins(userId, timeStampInMillis);
     }
 
     public List<Question> getUpdatedQuestionsList(Long timeStampInMIllis){

@@ -70,11 +70,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                               ContentProviderClient provider,
                               SyncResult syncResult) {
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         mUri = Uri.parse(extras.getString("uri"));
 
@@ -131,7 +131,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             Cursor relationsFromLocalDB = provider.query(uri, null, selection, selectionArgs, null);
 
             // put relations from local DB to server if there is any
-            if (relationsFromLocalDB != null) {
+            if (relationsFromLocalDB != null && relationsFromLocalDB.moveToFirst()) {
                 // creates list of POJOs from cursor
                 List<Relation> relations = new ArrayList<>();
 
@@ -147,30 +147,23 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 }
                 // puts Relations from local database to server
                 relations = mController.bulkAddRelations(relations);
-
-/*                // updates relation_id
-                for (Relation rel : relations) {
-
-                    cv = rel.toContentValues();
-                    selection = "timestamp = ?";
-                    selectionArgs = new String[]{String.valueOf(rel.getTimestamp().getTime())};
-                    provider.update(uri, cv, selection, selectionArgs);
-                }*/
             }
 
             // gets list of Relations from server
             List<Relation> relationsFromServer = mController.getUpdatedRelationsList((long) 0);
 
-            provider.delete(uri, null, null);
+            // deletes all relations in local DB
+            provider.delete(RELATIONS_DATA_URI, null, null);
 
             // puts Relations from server to local database
             for (Relation relation : relationsFromServer) {
 
-                cv = relation.toContentValues();
-                selection = "relation_id = ?";
-                selectionArgs = new String[]{String.valueOf(relation.getRelId())};
+               cv = relation.toContentValues();
+ /*                selection = "relation_id = ? or timestamp = ?";
+                selectionArgs = new String[]{String.valueOf(relation.getRelId()),
+                                            String.valueOf(relation.getTimestamp().getTime())};
 
-//                if (provider.update(uri, cv, selection, selectionArgs) == 0)
+                if (provider.update(uri, cv, selection, selectionArgs) == 0)*/
                     provider.insert(uri, cv);
             }
 

@@ -89,8 +89,10 @@
                 android:layout_marginRight="@dimen/listItemPaddingRight"
                 android:background="@drawable/bg_button"
                 android:text="Follow"
-                android:textColor="@color/abc_primary_text_material_light"
-                android:textStyle="bold" />
+                android:textColor="@color/primary_material_light"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small.Inverse"
+                android:width="90dp"
+                style="@style/Base.Widget.AppCompat.Button" />
 
         </RelativeLayout>
 

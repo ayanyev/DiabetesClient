@@ -7,6 +7,6 @@ public enum UserType {
     TEEN,
     CLINICIAN,
     PARENT,
-    ALL
+    ALL;
 
 }

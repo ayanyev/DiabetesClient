@@ -1,19 +1,18 @@
-package org.coursera.capstone.t1dteensclient.activities;
+package org.coursera.capstone.t1dteensclient.fragments;
 
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
+import android.widget.Toast;
 
 import org.coursera.capstone.t1dteensclient.R;
 import org.coursera.capstone.t1dteensclient.Utils;
@@ -30,6 +29,8 @@ public class SubscriptionsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_subscriptions, container, false);
+
+        setHasOptionsMenu(true);
 
         TabLayout tabs = (TabLayout) view.findViewById(R.id.subscriptionsTabView);
 
@@ -65,6 +66,31 @@ public class SubscriptionsFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.subs_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+
+            case R.id.subs_sync:
+
+                Utils.requestSyncOnDemand(getActivity().getApplicationContext(),
+                        ServiceContract.RELATIONS_DATA_URI);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(getActivity(), "Sync done", Toast.LENGTH_LONG).show();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

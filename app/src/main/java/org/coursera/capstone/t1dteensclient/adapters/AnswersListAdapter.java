@@ -196,7 +196,7 @@ public class AnswersListAdapter extends ArrayAdapter<Answer> {
 
         int type = getItemViewType(position);
 
-        if (mAnswers.get(position).getText() == null &&
+        if (mAnswers.get(position).getText().equals("") &&
                 (type == NUMBER_TYPE || type == TEXT_TYPE || type == TIME_PICKER_TYPE)) {
 
             EditText t = null;
@@ -204,10 +204,13 @@ public class AnswersListAdapter extends ArrayAdapter<Answer> {
             switch (type) {
                 case NUMBER_TYPE:
                     t = (EditText) listItem.findViewById(R.id.answerText);
+                    break;
                 case TEXT_TYPE:
                     t = (EditText) listItem.findViewById(R.id.answerText);
+                    break;
                 case TIME_PICKER_TYPE:
                     t = (EditText) listItem.findViewById(R.id.answerTime);
+                    break;
             }
 
             t.setError("must not be empty");

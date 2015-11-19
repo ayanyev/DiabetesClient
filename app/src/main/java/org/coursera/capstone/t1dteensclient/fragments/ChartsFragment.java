@@ -1,4 +1,4 @@
-package org.coursera.capstone.t1dteensclient.activities;
+package org.coursera.capstone.t1dteensclient.fragments;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -148,6 +148,8 @@ public class ChartsFragment extends Fragment implements OnChartValueSelectedList
         mChart.getXAxis().setDrawAxisLine(false);
         mChart.getXAxis().setDrawGridLines(false);
 
+        mChart.setNoDataText("USER PROVIDED NO CHECKINS DATA");
+
         Legend legend = mChart.getLegend();
         legend.setPosition(Legend.LegendPosition.BELOW_CHART_RIGHT);
         legend.setTextSize(16);
@@ -290,41 +292,48 @@ public class ChartsFragment extends Fragment implements OnChartValueSelectedList
 
         // statistics for the period
 
-        ViewData data;
 
-        float sugarAvr = 0;
-        data = (ViewData) sugarLevelValues.get(sugarLevelValues.size()-1).getData();
-        mSugarLast.setText(data.getValue());
+        if (sugarLevelValues.size() > 0 && moodValues.size()>0) {
+            ViewData data;
 
-        for (Entry value : sugarLevelValues) {
-            sugarAvr += value.getVal();
+            float sugarAvr = 0;
+            data = (ViewData) sugarLevelValues.get(sugarLevelValues.size() - 1).getData();
+            mSugarLast.setText(data.getValue());
+
+            for (Entry value : sugarLevelValues) {
+                sugarAvr += value.getVal();
+            }
+
+            sugarAvr = sugarAvr / sugarLevelValues.size();
+            mSugarAvr.setText(String.format("%.1f", sugarAvr) + " mmol/l");
+
+            float moodAvr = 0;
+            data = (ViewData) moodValues.get(moodValues.size() - 1).getData();
+            mFellLast.setText(data.getValue().split(" ")[1]);
+
+            for (Entry value : moodValues) {
+                moodAvr += value.getVal();
+            }
+            moodAvr = moodAvr / moodValues.size();
+            String moodAvrStr = moodMap.get(Math.round(moodAvr));
+            mFeelAvr.setText(String.valueOf(moodAvrStr));
+
+            if (sugarAvr < 6)
+                mSugarTrend.setImageResource(R.drawable.good);
+            else if (sugarAvr < 8)
+                mSugarTrend.setImageResource(R.drawable.neutral);
+            else
+                mSugarTrend.setImageResource(R.drawable.bad);
+
+            if (moodAvr < 6)
+                mFeelTrend.setImageResource(R.drawable.bad);
+            else
+                mFeelTrend.setImageResource(R.drawable.good);
+        } else {
+
+
+
         }
-
-        sugarAvr = sugarAvr/sugarLevelValues.size();
-        mSugarAvr.setText(String.format("%.1f", sugarAvr) + " mmol/l");
-
-        float moodAvr = 0;
-        data = (ViewData) moodValues.get(moodValues.size()-1).getData();
-        mFellLast.setText(data.getValue().split(" ")[1]);
-
-        for (Entry value : moodValues) {
-            moodAvr += value.getVal();
-        }
-        moodAvr = moodAvr/moodValues.size();
-        String moodAvrStr = moodMap.get(Math.round(moodAvr));
-        mFeelAvr.setText(String.valueOf(moodAvrStr));
-
-        if (sugarAvr < 6)
-            mSugarTrend.setImageResource(R.drawable.good);
-        else if (sugarAvr < 8)
-            mSugarTrend.setImageResource(R.drawable.neutral);
-        else
-            mSugarTrend.setImageResource(R.drawable.bad);
-
-        if (moodAvr < 6)
-            mFeelTrend.setImageResource(R.drawable.bad);
-        else
-            mFeelTrend.setImageResource(R.drawable.good);
 
         return new LineData(xVals, dataSets);
     }

@@ -10,10 +10,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.coursera.capstone.t1dteensclient.R;
+import org.coursera.capstone.t1dteensclient.Utils;
 import org.coursera.capstone.t1dteensclient.controllers.SvcController;
 import org.coursera.capstone.t1dteensclient.entities.Relation;
 import org.coursera.capstone.t1dteensclient.entities.User;
@@ -26,6 +26,7 @@ public class SubscribersListCursorAdapter extends CursorAdapter {
 
     final String TAG = getClass().getSimpleName();
     SvcController mController;
+    ViewHolder mHolder;
 
     public SubscribersListCursorAdapter(Context context, Cursor c, boolean autoRequery) {
         super(context, c, autoRequery);
@@ -39,21 +40,21 @@ public class SubscribersListCursorAdapter extends CursorAdapter {
 
         Log.d(TAG, "New view created");
 
-        ViewHolder holder = new ViewHolder();
+        mHolder = new ViewHolder();
 
-        holder.fullName = (TextView) view.findViewById(R.id.userListItem_fullName);
-        holder.type = (TextView) view.findViewById(R.id.userListItem_type);
-        holder.checkins = (TextView) view.findViewById(R.id.userListItem_checkins);
-        holder.since = (TextView) view.findViewById(R.id.userListItem_since);
-        holder.acceptButton = (ImageButton) view.findViewById(R.id.userListItem_acceptButton);
-        holder.declineButton = (ImageButton) view.findViewById(R.id.userListItem_declineButton);
-        holder.actionButton = (Button) view.findViewById(R.id.userListItem_actionButton);
+        mHolder.fullName = (TextView) view.findViewById(R.id.userListItem_fullName);
+        mHolder.type = (TextView) view.findViewById(R.id.userListItem_type);
+        mHolder.checkins = (TextView) view.findViewById(R.id.userListItem_checkins);
+        mHolder.since = (TextView) view.findViewById(R.id.userListItem_since);
+        mHolder.acceptButton = (ImageButton) view.findViewById(R.id.userListItem_acceptButton);
+        mHolder.declineButton = (ImageButton) view.findViewById(R.id.userListItem_declineButton);
+        mHolder.actionButton = (Button) view.findViewById(R.id.userListItem_actionButton);
 
         Relation relation = (new Relation()).fromCursorToPOJO(cursor, -1);
         // gets the user associated with subscription
-        holder.user = mController.getUserById(relation.getSubscriber());
+        mHolder.user = mController.getUserById(relation.getSubscriber());
 
-        view.setTag(holder);
+        view.setTag(mHolder);
         return view;
     }
 
@@ -63,36 +64,35 @@ public class SubscribersListCursorAdapter extends CursorAdapter {
 
         Log.d(TAG, "View is binded");
 
-        ViewHolder holder = (ViewHolder) view.getTag();
+        mHolder = (ViewHolder) view.getTag();
         Relation relation = (new Relation()).fromCursorToPOJO(cursor, -1);
 
         MyOnClickListener onClickListener = new MyOnClickListener(context, relation);
-        holder.acceptButton.setOnClickListener(onClickListener);
-        holder.declineButton.setOnClickListener(onClickListener);
-        holder.actionButton.setOnClickListener(onClickListener);
+        mHolder.acceptButton.setOnClickListener(onClickListener);
+        mHolder.declineButton.setOnClickListener(onClickListener);
+        mHolder.actionButton.setOnClickListener(onClickListener);
 
-        holder.fullName.setText(holder.user.getFirstName().toUpperCase()
-                + " " + holder.user.getLastName().toUpperCase());
-        holder.type.setText(holder.user.getUserType().toString());
-        holder.checkins.setText(String.valueOf(holder.user.getCheckIns().size()) + " checkins");
-        holder.since.setText("since " + new DateTime(holder.user.getTimestamp()).toString("dd MMM yy"));
+        mHolder.fullName.setText(mHolder.user.toString().toUpperCase());
+        mHolder.type.setText(mHolder.user.getUserType().toString());
+        mHolder.checkins.setText(String.valueOf(mHolder.user.getCheckIns().size()) + " checkins");
+        mHolder.since.setText("since " + new DateTime(mHolder.user.getTimestamp()).toString(Utils.getDatePattern(context)));
 
         if (relation.getStatus() == RelationStatus.CONFIRMED) {
-            holder.acceptButton.setVisibility(View.GONE);
-            holder.declineButton.setVisibility(View.GONE);
-            holder.actionButton.setText(R.string.Unfollow);
-            holder.actionButton.setEnabled(true);
-            holder.actionButton.setVisibility(View.VISIBLE);
+            mHolder.acceptButton.setVisibility(View.GONE);
+            mHolder.declineButton.setVisibility(View.GONE);
+            mHolder.actionButton.setText(R.string.Unfollow);
+            mHolder.actionButton.setEnabled(true);
+            mHolder.actionButton.setVisibility(View.VISIBLE);
         } else if (relation.getStatus() == RelationStatus.PENDING) {
-            holder.acceptButton.setVisibility(View.VISIBLE);
-            holder.declineButton.setVisibility(View.VISIBLE);
-            holder.actionButton.setVisibility(View.GONE);
+            mHolder.acceptButton.setVisibility(View.VISIBLE);
+            mHolder.declineButton.setVisibility(View.VISIBLE);
+            mHolder.actionButton.setVisibility(View.GONE);
         } else if (relation.getStatus() == RelationStatus.REJECTED) {
-            holder.acceptButton.setVisibility(View.GONE);
-            holder.declineButton.setVisibility(View.GONE);
-            holder.actionButton.setText(R.string.Rejected);
-            holder.actionButton.setEnabled(false);
-            holder.actionButton.setVisibility(View.VISIBLE);
+            mHolder.acceptButton.setVisibility(View.GONE);
+            mHolder.declineButton.setVisibility(View.GONE);
+            mHolder.actionButton.setText(R.string.Rejected);
+            mHolder.actionButton.setEnabled(false);
+            mHolder.actionButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -146,8 +146,27 @@ public class SubscribersListCursorAdapter extends CursorAdapter {
 
             if (mRelation.updateIt(mContext) > 0) {
 
+
                 Log.d(TAG, "Relation successfully updated");
                 notifyDataSetChanged();
+
+                if (mRelation.getStatus() == RelationStatus.CONFIRMED) {
+                    mHolder.acceptButton.setVisibility(View.GONE);
+                    mHolder.declineButton.setVisibility(View.GONE);
+                    mHolder.actionButton.setText(R.string.Unfollow);
+                    mHolder.actionButton.setEnabled(true);
+                    mHolder.actionButton.setVisibility(View.VISIBLE);
+                } else if (mRelation.getStatus() == RelationStatus.PENDING) {
+                    mHolder.acceptButton.setVisibility(View.VISIBLE);
+                    mHolder.declineButton.setVisibility(View.VISIBLE);
+                    mHolder.actionButton.setVisibility(View.GONE);
+                } else if (mRelation.getStatus() == RelationStatus.REJECTED) {
+                    mHolder.acceptButton.setVisibility(View.GONE);
+                    mHolder.declineButton.setVisibility(View.GONE);
+                    mHolder.actionButton.setText(R.string.Rejected);
+                    mHolder.actionButton.setEnabled(false);
+                    mHolder.actionButton.setVisibility(View.VISIBLE);
+                }
 
             }
         }

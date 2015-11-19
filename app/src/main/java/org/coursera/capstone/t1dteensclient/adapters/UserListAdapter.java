@@ -2,7 +2,9 @@ package org.coursera.capstone.t1dteensclient.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,10 +12,15 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.coursera.capstone.t1dteensclient.Constants;
 import org.coursera.capstone.t1dteensclient.R;
 import org.coursera.capstone.t1dteensclient.Utils;
+import org.coursera.capstone.t1dteensclient.activities.MainActivity;
 import org.coursera.capstone.t1dteensclient.entities.Relation;
 import org.coursera.capstone.t1dteensclient.entities.User;
+import org.coursera.capstone.t1dteensclient.fragments.AddSubscriptionFragment;
+import org.coursera.capstone.t1dteensclient.fragments.SubscriptionsFragment;
+import org.coursera.capstone.t1dteensclient.fragments.SubscriptionsListFragment;
 import org.joda.time.DateTime;
 
 import java.util.List;
@@ -106,6 +113,10 @@ public class UserListAdapter extends BaseAdapter {
                 ((Button) v).setText(R.string.pending);
                 v.setEnabled(false);
             }
+
+            ((MainActivity) mContext).getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_frame, new SubscriptionsFragment())
+                    .commit();
         }
     }
 

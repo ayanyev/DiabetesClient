@@ -21,7 +21,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     + ServiceContract.CHECKINS_TABLE_NAME
                     + " ("
                     + ServiceContract.CHECKINS_COLUMN_ID
-                    + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + " INTEGER PRIMARY KEY, "
                     + ServiceContract.CHECKINS_COLUMN_CHECKING_ID
                     + " INTEGER, "
                     + ServiceContract.CHECKINS_COLUMN_USER_ID
@@ -36,7 +36,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     + ServiceContract.ANSWERS_TABLE_NAME
                     + " ("
                     + ServiceContract.ANSWERS_COLUMN_ID
-                    + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + " INTEGER PRIMARY KEY, "
                     + ServiceContract.ANSWERS_COLUMN_ANSWER_ID
                     + " INTEGER, "
                     + ServiceContract.ANSWERS_COLUMN_TEXT
@@ -55,7 +55,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     + ServiceContract.QUESTIONS_TABLE_NAME
                     + " ("
                     + ServiceContract.QUESTIONS_COLUMN_ID
-                    + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + " INTEGER PRIMARY KEY, "
                     + ServiceContract.QUESTIONS_COLUMN_QUESTION_ID
                     + " INTEGER, "
                     + ServiceContract.QUESTIONS_COLUMN_TEXT
@@ -76,7 +76,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     + ServiceContract.OPTIONS_TABLE_NAME
                     + " ("
                     + ServiceContract.OPTIONS_COLUMN_ID
-                    + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + " INTEGER PRIMARY KEY, "
                     + ServiceContract.OPTIONS_COLUMN_OPTION_ID
                     + " INTEGER, "
                     + ServiceContract.OPTIONS_COLUMN_TEXT
@@ -93,7 +93,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     + ServiceContract.RELATIONS_TABLE_NAME
                     + " ("
                     + ServiceContract.RELATIONS_COLUMN_ID
-                    + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + " INTEGER PRIMARY KEY, "
                     + ServiceContract.RELATIONS_COLUMN_RELATION_ID
                     + " INTEGER, "
                     + ServiceContract.RELATIONS_COLUMN_SUBSCRIBER
@@ -110,7 +110,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         db.execSQL(CREATE_CHECKINS_DATA_TABLE);
         db.execSQL(CREATE_ANSWERS_DATA_TABLE);
-        db.execSQL(CREATE_QUESTIONS_DATA_TABLE);
+//        db.execSQL(CREATE_QUESTIONS_DATA_TABLE);
         db.execSQL(CREATE_OPTIONS_DATA_TABLE);
         db.execSQL(CREATE_RELATIONS_DATA_TABLE);
     }
@@ -122,8 +122,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 + ServiceContract.CHECKINS_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "
                 + ServiceContract.ANSWERS_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS "
-                + ServiceContract.QUESTIONS_TABLE_NAME);
+//        db.execSQL("DROP TABLE IF EXISTS "
+//                + ServiceContract.QUESTIONS_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "
                 + ServiceContract.OPTIONS_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "

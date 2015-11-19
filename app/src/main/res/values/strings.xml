@@ -75,4 +75,6 @@
     <string name="User_details_summary">Add or change information about yourself</string>
     <string name="privacy_policy_summary">Select which of your personal data you want to share with others</string>
     <string name="reminders_summary">Select when you want to receive checkin reminders</string>
+    <string name="title_activity_user">User stats</string>
+    <string name="title_activity_register">Registration</string>
 </resources>

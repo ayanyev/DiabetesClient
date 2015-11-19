@@ -1,23 +1,25 @@
-package org.coursera.capstone.t1dteensclient.activities;
+package org.coursera.capstone.t1dteensclient.fragments;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.AdapterView;
 
 import com.melnykov.fab.FloatingActionButton;
 
 import org.coursera.capstone.t1dteensclient.Constants;
 import org.coursera.capstone.t1dteensclient.R;
 import org.coursera.capstone.t1dteensclient.Utils;
+import org.coursera.capstone.t1dteensclient.activities.UserActivity;
 import org.coursera.capstone.t1dteensclient.adapters.UserListCursorAdapter;
 import org.coursera.capstone.t1dteensclient.common.GenericLoaderFragment;
+import org.coursera.capstone.t1dteensclient.entities.User;
 import org.coursera.capstone.t1dteensclient.provider.ServiceContract;
 
 public class SubscriptionsListFragment extends GenericLoaderFragment
@@ -84,7 +86,7 @@ public class SubscriptionsListFragment extends GenericLoaderFragment
         Cursor cursor = (Cursor) data;
 
         if (cursor == null || cursor.getCount() == 0) {
-            msgView.setText("Currently there is no user on subscriptions list\nTry add one by pressing the button in right bottom corner");
+            msgView.setText("Currently there is no userType on subscriptions list\nTry add one by pressing the button in right bottom corner");
             msgLayout.setVisibility(View.VISIBLE);
         } else {
             msgLayout.setVisibility(View.GONE);
@@ -96,5 +98,21 @@ public class SubscriptionsListFragment extends GenericLoaderFragment
     public void onLoaderReset(Loader loader) {
         super.onLoaderReset(loader);
         mAdapter.changeCursor(null);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        User user = (User) mAdapter.getItem(position);
+
+        Bundle bundle = new Bundle();
+        bundle.putInt(UserFragment.USER_TYPE, UserFragment.REMOTE_USER);
+        bundle.putParcelable(UserFragment.USER, user);
+
+        Intent intent = new Intent(getActivity(), UserActivity.class);
+        intent.putExtra("args", bundle);
+
+        startActivity(intent);
+
     }
 }

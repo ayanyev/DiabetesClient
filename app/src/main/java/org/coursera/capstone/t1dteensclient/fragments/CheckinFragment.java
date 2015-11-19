@@ -1,4 +1,4 @@
-package org.coursera.capstone.t1dteensclient.activities;
+package org.coursera.capstone.t1dteensclient.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -14,6 +14,7 @@ import android.widget.TextView;
 import org.coursera.capstone.t1dteensclient.R;
 import org.coursera.capstone.t1dteensclient.Utils;
 import org.coursera.capstone.t1dteensclient.adapters.AnswersListAdapter;
+import org.coursera.capstone.t1dteensclient.entities.Answer;
 import org.coursera.capstone.t1dteensclient.entities.CheckIn;
 import org.coursera.capstone.t1dteensclient.entities.enums.CheckInStatus;
 
@@ -94,9 +95,8 @@ public class CheckinFragment extends Fragment  implements Button.OnClickListener
 
             case R.id.buttonCheckinSkip:
 
-                if (validateInput()) {
-
                     mCheckin.setStatus(CheckInStatus.SKIPPED);
+                    mCheckin.setAnswers(new ArrayList<Answer>());
 
                     if (mCheckin.saveIt(getActivity()) != null) {
 
@@ -106,7 +106,6 @@ public class CheckinFragment extends Fragment  implements Button.OnClickListener
 
                     getActivity().finish();
                     break;
-                }
         }
     }
 

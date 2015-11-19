@@ -49,7 +49,8 @@ import static org.coursera.capstone.t1dteensclient.Constants.*;
 
 
 public class GenericListFragment extends ListFragment
-        implements FloatingActionButton.OnClickListener{
+        implements FloatingActionButton.OnClickListener,
+        AdapterView.OnItemClickListener{
 
     public SwipeRefreshLayout mSwipeRefreshLayout;
     FrameLayout mListFragmentView;
@@ -63,11 +64,10 @@ public class GenericListFragment extends ListFragment
 
     }
 
-    public interface FragmentCallbacks {
-       void onRegister(User user);
-    }
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-    public  FragmentCallbacks mCallbacks;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -116,17 +116,10 @@ public class GenericListFragment extends ListFragment
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mCallbacks = (FragmentCallbacks) activity;
+    public void onStart() {
+        super.onStart();
+        getListView().setOnItemClickListener(this);
     }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mCallbacks = null;
-    }
-
 
     private class ListFragmentSwipeRefreshLayout extends SwipeRefreshLayout {
 

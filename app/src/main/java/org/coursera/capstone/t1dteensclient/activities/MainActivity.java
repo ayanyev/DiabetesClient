@@ -2,14 +2,13 @@ package org.coursera.capstone.t1dteensclient.activities;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,26 +21,24 @@ import android.widget.TextView;
 
 import org.coursera.capstone.t1dteensclient.R;
 import org.coursera.capstone.t1dteensclient.Utils;
-import org.coursera.capstone.t1dteensclient.common.GenericListFragment;
 import org.coursera.capstone.t1dteensclient.common.LifecycleLoggingActivity;
-import org.coursera.capstone.t1dteensclient.entities.User;
+import org.coursera.capstone.t1dteensclient.fragments.CheckinsListFragment;
+import org.coursera.capstone.t1dteensclient.fragments.PreferencesFragment;
+import org.coursera.capstone.t1dteensclient.fragments.SubscriptionsFragment;
+import org.coursera.capstone.t1dteensclient.fragments.UserFragment;
 
 public class MainActivity extends LifecycleLoggingActivity
-        implements DatePickerDialog.OnDateSetListener,
-                    GenericListFragment.FragmentCallbacks{
+        implements DatePickerDialog.OnDateSetListener {
 
 
     private final String TAG = getClass().getSimpleName();
 
-    Fragment mFragment;
-
-    private static final String FRAGMENT_TAG = "This is fragment";
+    public static final String FRAGMENT_TAG = "This is fragment";
     private static final int USER_FRAGMENT = 0;
     private static final int CHECKINS_FRAGMENT = 1;
     private static final int SUBSCRIPTIONS_FRAGMENT = 2;
     private static final int PREFERENCES_FRAGMENT = 3;
     private static final int LOGOUT = 4;
-    public static final int LOGIN_FRAGMENT = 5;
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
@@ -54,6 +51,7 @@ public class MainActivity extends LifecycleLoggingActivity
 
     Fragment fragment = null;
     private PreferenceFragment prefFragment = null;
+    private static int mCurrentFragment = USER_FRAGMENT;
 
 
     @Override
@@ -64,8 +62,8 @@ public class MainActivity extends LifecycleLoggingActivity
         mContext = getApplicationContext();
 
         // TODO remove after testing
-        login = (TextView) findViewById(R.id.currentLogin);
-        login.setText(Utils.getCurrentUserName(this).toUpperCase());
+//        login = (TextView) findViewById(R.id.currentLogin);
+//        login.setText(Utils.getCurrentUserName(this).toUpperCase());
 
         ////////
         mTitle = getTitle();
@@ -100,21 +98,12 @@ public class MainActivity extends LifecycleLoggingActivity
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         // TODO change starting frame
-        if (savedInstanceState == null) {
-            setFragment(USER_FRAGMENT);
-        }
-    }
+        if (savedInstanceState != null)
+            mCurrentFragment = savedInstanceState.getInt(FRAGMENT_TAG, USER_FRAGMENT);
+        else
+            setFragment(mCurrentFragment);
 
-    @Override
-    public void onRegister(User user) {
-//        super.onRegister(user);
 
-        Utils.rememberCurrentUserCredentials(mContext, user);
-
-        mFragment = new UserFragment();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, mFragment)
-                .commit();
     }
 
     @Override
@@ -164,6 +153,7 @@ public class MainActivity extends LifecycleLoggingActivity
 
                 Utils.setGuestUserCredentials(mContext);
                 finish();
+                startActivity(new Intent(mContext, LoginActivity.class));
 
             } else
                 setFragment(position);
@@ -172,6 +162,7 @@ public class MainActivity extends LifecycleLoggingActivity
 
     private void setFragment(int position) {
 
+        mCurrentFragment = position;
 
         switch (position) {
 
@@ -181,6 +172,11 @@ public class MainActivity extends LifecycleLoggingActivity
                         .commit();
                 prefFragment = null;
                 fragment = new UserFragment();
+
+                Bundle bundle = new Bundle();
+                bundle.putInt("which userType", UserFragment.LOCAL_USER);
+                fragment.setArguments(bundle);
+
                 getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_frame, fragment, FRAGMENT_TAG)
                     .commit();
@@ -215,21 +211,17 @@ public class MainActivity extends LifecycleLoggingActivity
                         .replace(R.id.content_frame, prefFragment)
                         .commit();
                 break;
-            case LOGIN_FRAGMENT:
-                if (prefFragment != null) getFragmentManager().beginTransaction()
-                        .remove(getFragmentManager().findFragmentById(prefFragment.getId()))
-                        .commit();
-                prefFragment = null;
-                fragment =  new LoginFragment();
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.content_frame, fragment, FRAGMENT_TAG)
-                        .commit();
-                break;
         }
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
         mTitle = mMenuItems[position];
         mDrawerLayout.closeDrawer(mDrawerList);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(FRAGMENT_TAG, mCurrentFragment);
+        super.onSaveInstanceState(outState);
     }
 }

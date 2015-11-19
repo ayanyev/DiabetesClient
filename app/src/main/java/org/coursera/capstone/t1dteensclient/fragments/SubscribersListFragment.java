@@ -1,4 +1,4 @@
-package org.coursera.capstone.t1dteensclient.activities;
+package org.coursera.capstone.t1dteensclient.fragments;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -54,7 +54,7 @@ public class  SubscribersListFragment extends GenericLoaderFragment {
         Cursor cursor = (Cursor) data;
 
         if (cursor == null || cursor.getCount() == 0) {
-            msgView.setText("Currently no user is following you\nSwipe down to refresh");
+            msgView.setText("Currently no userType is following you\nSwipe down to refresh");
             msgLayout.setVisibility(View.VISIBLE);
         } else {
             msgLayout.setVisibility(View.GONE);

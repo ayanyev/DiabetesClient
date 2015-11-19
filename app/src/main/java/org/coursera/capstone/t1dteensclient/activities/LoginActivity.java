@@ -22,6 +22,7 @@ import org.coursera.capstone.t1dteensclient.entities.User;
 public class LoginActivity extends Activity {
 
     private static final int MAIN_ACTIVITY_REQUEST_CODE = 0;
+    private static final  int REGISTER_ACTIVITY_REQUEST_CODE = 1;
     private Button mLoginButton;
     private Button mRegisterButton;
     private EditText mPasswordInput;
@@ -34,17 +35,14 @@ public class LoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mContext = getApplicationContext();
+        mContext = this;
 
-        // TODO. REMOVE AFTER TESTING DONE
-//        Utils.setGuestUserCredentials(this);
-
-        // if user is remembered on the device starts MainActivity,
+        // if userType is remembered on the device starts MainActivity,
         // else - go on with creating LoginActivity
 
         if (Utils.isUserRemembered(this)) {
 
-            // TODO think about starting MainActivity in case the user is deactivated or removed from sever
+            // TODO think about starting MainActivity in case the userType is deactivated or removed from sever
             startMainActivity();
 
         } else {
@@ -64,7 +62,7 @@ public class LoginActivity extends Activity {
                         mPasswordInput.setVisibility(View.VISIBLE);
                         mRememberCheckBox.setVisibility(View.VISIBLE);
 
-                        // send user request to server and if user exists and is active
+                        // send userType request to server and if userType exists and is active
                         // starts MainActivity
                     } else {
 
@@ -74,7 +72,7 @@ public class LoginActivity extends Activity {
                         // light input validation
                         if (!username.isEmpty() && !password.isEmpty()) {
 
-                            // checks if a user exists with given credentials
+                            // checks if a userType exists with given credentials
                             User userToSignIn = isUserActive(username, password);
 
                             if (userToSignIn != null) {
@@ -82,7 +80,7 @@ public class LoginActivity extends Activity {
                                 // sets views to initial state
                                 initViews();
 
-                                // put user credentials into shared preferences on demand
+                                // put userType credentials into shared preferences on demand
                                 if (mRememberCheckBox.isChecked()) {
                                     // sets password because it is not present in server response
                                     userToSignIn.setPassword(password);
@@ -103,6 +101,8 @@ public class LoginActivity extends Activity {
                 @Override
                 public void onClick(View view) {
 
+                    Intent intent = new Intent(mContext, RegisterActivity.class);
+                    startActivityForResult(intent, REGISTER_ACTIVITY_REQUEST_CODE);
                 }
             });
         }
@@ -111,6 +111,18 @@ public class LoginActivity extends Activity {
     private void startMainActivity() {
 
         startActivityForResult(new Intent(this, MainActivity.class), MAIN_ACTIVITY_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REGISTER_ACTIVITY_REQUEST_CODE &&
+                resultCode == RESULT_OK){
+
+            finish();
+            startActivity(getIntent());
+        }
     }
 
     private User isUserActive(String username, String password){

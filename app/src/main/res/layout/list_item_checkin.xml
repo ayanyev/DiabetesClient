@@ -47,18 +47,6 @@
                 android:textSize="@dimen/primary_text" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="rID: "
-                android:id="@+id/checkinListItem_remoteID"
-                android:layout_alignParentEnd="false"
-                android:layout_alignParentLeft="false"
-                android:paddingTop="@dimen/listItemTextPaddingTopBottom"
-                android:textSize="@dimen/primary_text"
-                android:layout_toRightOf="@+id/checkinListItem_status"
-                android:layout_marginLeft="5dp" />
-
-            <TextView
                 android:id="@+id/checkinListItem_timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

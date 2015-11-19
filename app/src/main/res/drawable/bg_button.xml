@@ -2,6 +2,8 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true" >
         <shape>
+            <size
+                android:width="90dp"/>
             <solid
                 android:color="@color/colorPrimaryDark" />
             <stroke
@@ -10,14 +12,16 @@
             <corners
                 android:radius="2dp" />
             <padding
-                android:left="10dp"
+                android:left="5dp"
                 android:top="10dp"
-                android:right="10dp"
+                android:right="5dp"
                 android:bottom="10dp" />
         </shape>
     </item>
     <item android:state_enabled="false" >
         <shape>
+            <size
+                android:width="90dp"/>
             <solid
                 android:color="@color/primary_text_default_material_light" />
             <stroke
@@ -26,14 +30,16 @@
             <corners
                 android:radius="2dp" />
             <padding
-                android:left="10dp"
+                android:left="5dp"
                 android:top="10dp"
-                android:right="10dp"
+                android:right="5dp"
                 android:bottom="10dp" />
         </shape>
     </item>
     <item >
         <shape>
+            <size
+                android:width="90dp"/>
             <solid
                 android:color="@color/colorPrimary" />
             <stroke
@@ -42,9 +48,9 @@
             <corners
                 android:radius="2dp" />
             <padding
-                android:left="10dp"
+                android:left="5dp"
                 android:top="10dp"
-                android:right="10dp"
+                android:right="5dp"
                 android:bottom="10dp" />
         </shape>
     </item>

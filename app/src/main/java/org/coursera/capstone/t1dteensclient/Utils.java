@@ -106,10 +106,11 @@ public class Utils {
                     .putString(KEY_CURRENT_PASSWORD, user.getPassword())
                     .putString(KEY_CURRENT_FIRSTNAME, user.getFirstName())
                     .putString(KEY_CURRENT_LASTNAME, user.getLastName())
-                    .putInt(KEY_CURRENT_MEDREC, user.getMedicalRecord())
-                .putString(KEY_CURRENT_GENDER, String.valueOf(user.getGender()))
-                .putString(KEY_CURRENT_DOB, user.getDateOfBirth().toString())
-                .apply();
+                    .putString(KEY_CURRENT_MEDREC, String.valueOf(user.getMedicalRecord()))
+                    .putString(KEY_CURRENT_GENDER, String.valueOf(user.getGender()))
+                    .putString(KEY_CURRENT_DOB, String.valueOf(new DateTime(user.getDateOfBirth()
+                            .getTime()).toString("YYYY-MM-dd")))
+                    .apply();
     }
 
     public static void setDummyUserCredetials(Context context){

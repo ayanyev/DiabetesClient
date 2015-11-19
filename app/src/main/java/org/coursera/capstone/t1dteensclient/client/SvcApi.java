@@ -11,7 +11,7 @@ import retrofit.http.Path;
 import java.util.Collection;
 import java.util.List;
 
-public interface T1DteensSvcApi {
+public interface SvcApi {
 
 	// USERS
 	
@@ -47,6 +47,9 @@ public interface T1DteensSvcApi {
 	@POST("/checkins/bulk")
 	public List<CheckIn> bulkAddCheckins(@Body List<CheckIn> cis);
 
+	@GET("/checkins/{id}/{timestamp}")
+	public List<CheckIn> getCheckins(@Path("id") Long userId, @Path("timestamp") Long timeStampInMillis);
+
 	// QUESTIONS
 
 	@GET("/questions/{timestamp}")
@@ -68,5 +71,6 @@ public interface T1DteensSvcApi {
 
 	@POST("/relations/bulk")
 	public List<Relation> bulkAddRelations(@Body List<Relation> relations);
+
 
 }

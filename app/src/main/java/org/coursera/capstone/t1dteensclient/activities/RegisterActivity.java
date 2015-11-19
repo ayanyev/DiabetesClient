@@ -5,6 +5,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,8 +23,10 @@ import android.widget.Toast;
 
 import org.coursera.capstone.t1dteensclient.Constants;
 import org.coursera.capstone.t1dteensclient.R;
+import org.coursera.capstone.t1dteensclient.Utils;
 import org.coursera.capstone.t1dteensclient.client.RequestResult;
 import org.coursera.capstone.t1dteensclient.common.GenericListFragment;
+import org.coursera.capstone.t1dteensclient.common.LifecycleLoggingActivity;
 import org.coursera.capstone.t1dteensclient.controllers.SvcController;
 import org.coursera.capstone.t1dteensclient.entities.User;
 import org.coursera.capstone.t1dteensclient.entities.enums.UserGender;
@@ -34,7 +38,7 @@ import java.text.SimpleDateFormat;
 
 import retrofit.RetrofitError;
 
-public class LoginFragment extends GenericListFragment
+public class RegisterActivity extends LifecycleLoggingActivity
         implements DatePickerDialog.OnDateSetListener {
 
     private EditText mUsername, mPassword, mFirstName, mLastName, mDateOfBirth, mMedRecord;
@@ -43,39 +47,36 @@ public class LoginFragment extends GenericListFragment
     private View mRegisterFormView;
     Button mRegisterButton;
     Button mDatePickerButton;
-    private Activity mActivity;
     FragmentAsyncTask mAsyncTask;
     SvcController mController;
+    Context mContext;
 
-    public LoginFragment() {}
+    public RegisterActivity() {}
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        View rootView = inflater.inflate(R.layout.fragment_login, container, false);
+        setContentView(R.layout.activity_register);
 
-        initializeViews(rootView);
+        mContext = this;
 
-        mActivity = getActivity();
-
-        mController = new SvcController(mActivity);
-
-        return rootView;
+        initializeViews();
+        mController = new SvcController(this);
     }
 
-    private void initializeViews(View rootView) {
+    private void initializeViews() {
 
-        mUsername = (EditText) rootView.findViewById(R.id.username);
-        mPassword = (EditText) rootView.findViewById(R.id.password);
-        mFirstName = (EditText) rootView.findViewById(R.id.firstName);
-        mLastName = (EditText) rootView.findViewById(R.id.lastName);
-        mGender = (Spinner) rootView.findViewById(R.id.gender);
-        mUserType = (Spinner) rootView.findViewById(R.id.user_type);
-        mDateOfBirth = (EditText) rootView.findViewById(R.id.dob);
-        mMedRecord = (EditText) rootView.findViewById(R.id.medRecord);
+        mUsername = (EditText) findViewById(R.id.username);
+        mPassword = (EditText) findViewById(R.id.password);
+        mFirstName = (EditText) findViewById(R.id.firstName);
+        mLastName = (EditText) findViewById(R.id.lastName);
+        mGender = (Spinner) findViewById(R.id.gender);
+        mUserType = (Spinner) findViewById(R.id.user_type);
+        mDateOfBirth = (EditText) findViewById(R.id.dob);
+        mMedRecord = (EditText) findViewById(R.id.medRecord);
 
-        mRegisterButton = (Button) rootView.findViewById(R.id.register_button);
+        mRegisterButton = (Button) findViewById(R.id.register_button);
         mRegisterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,11 +87,11 @@ public class LoginFragment extends GenericListFragment
             }
         });
 
-        mRegisterFormView = rootView.findViewById(R.id.register_form);
-        mProgressView = rootView.findViewById(R.id.login_progress);
+        mRegisterFormView = findViewById(R.id.register_form);
+        mProgressView = findViewById(R.id.login_progress);
 
-        mDateOfBirth = (EditText) rootView.findViewById(R.id.dob);
-        mDatePickerButton = (Button) rootView.findViewById(R.id.btn_pick_dob);
+        mDateOfBirth = (EditText) findViewById(R.id.dob);
+        mDatePickerButton = (Button) findViewById(R.id.btn_pick_dob);
     }
 
     private User makeNewUser()  {
@@ -121,8 +122,9 @@ public class LoginFragment extends GenericListFragment
         public RequestResult doInBackground(User... params) {
 
             try {
-                return mController.register(params[0]);
-            } catch (RetrofitError retrofitError) {
+                RequestResult result = mController.register(params[0]);
+                return result;
+            } catch (Exception e) {
                 return new RequestResult(RequestResult.Message.FAILED_TO_CONNECT_TO_SERVER, (User) null);
             }
         }
@@ -134,7 +136,7 @@ public class LoginFragment extends GenericListFragment
 
             if (result.getMessage() == RequestResult.Message.CONFLICT) {
 
-                TextInputLayout username = (TextInputLayout) mActivity.findViewById(R.id.username_layout);
+                TextInputLayout username = (TextInputLayout) findViewById(R.id.username_layout);
                 username.setError("username '" + user.getUsername() + "' already exists");
                 username.requestFocus();
 
@@ -144,7 +146,7 @@ public class LoginFragment extends GenericListFragment
 
                 showProgress(false);
 
-                Toast.makeText(mActivity,
+                Toast.makeText(mContext,
                         "Registration failed",
                         Toast.LENGTH_LONG).show();
 
@@ -152,7 +154,7 @@ public class LoginFragment extends GenericListFragment
 
                 showProgress(false);
 
-                Toast.makeText(mActivity,
+                Toast.makeText(mContext,
                         "Failed to connect to server\nCheck internet connection",
                         Toast.LENGTH_LONG).show();
 
@@ -160,11 +162,13 @@ public class LoginFragment extends GenericListFragment
 
                 showProgress(false);
 
-                Toast.makeText(mActivity,
+                Toast.makeText(mContext,
                         user.getUsername().toUpperCase() + " was successfully registered",
                         Toast.LENGTH_LONG).show();
 
-                mCallbacks.onRegister(user);
+                setResult(RESULT_OK);
+                finish();
+
             }
         }
     }

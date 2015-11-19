@@ -1,4 +1,4 @@
-package org.coursera.capstone.t1dteensclient.activities;
+package org.coursera.capstone.t1dteensclient.fragments;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -23,6 +23,7 @@ import com.melnykov.fab.FloatingActionButton;
 import org.coursera.capstone.t1dteensclient.Constants;
 import org.coursera.capstone.t1dteensclient.R;
 import org.coursera.capstone.t1dteensclient.Utils;
+import org.coursera.capstone.t1dteensclient.activities.CheckinActivity;
 import org.coursera.capstone.t1dteensclient.adapters.CheckinsListAdapter;
 import org.coursera.capstone.t1dteensclient.common.GenericLoaderFragment;
 import org.coursera.capstone.t1dteensclient.entities.CheckIn;
@@ -46,8 +47,8 @@ public class CheckinsListFragment extends GenericLoaderFragment {
         setListAdapter(mAdapter);
 
         //TODO consider where to place after the testing
-//        Utils.requestSyncOnDemand(getActivity().getApplicationContext(),
-//                QUESTIONS_DATA_URI);
+        Utils.requestSyncOnDemand(getActivity().getApplicationContext(),
+                QUESTIONS_DATA_URI);
         //TODO consider where to place after the testing
 //        Utils.requestSyncOnDemand(getActivity().getApplicationContext(),
 //                CHECKINS_DATA_URI);

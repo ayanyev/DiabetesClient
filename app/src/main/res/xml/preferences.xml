@@ -102,7 +102,7 @@
             <SwitchPreference
                 android:key="reminders_enabled"
                 android:title="Enable reminders"
-                android:defaultValue="true" />
+                android:defaultValue="false" />
             <Preference
                 android:key="reminder_1"
                 android:title="Reminder 1"

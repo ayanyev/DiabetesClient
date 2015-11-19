@@ -95,9 +95,7 @@ public class Relation implements EntityInterface{
 
         ContentValues cv = new ContentValues();
 
-/*        if (_id == 0)
-            cv.putNull(RELATIONS_COLUMN_ID);
-        else*/
+        if (_id != null)
             cv.put(RELATIONS_COLUMN_ID, _id);
         cv.put(RELATIONS_COLUMN_RELATION_ID, relId);
         cv.put(RELATIONS_COLUMN_SUBSCRIBER, subscriber);

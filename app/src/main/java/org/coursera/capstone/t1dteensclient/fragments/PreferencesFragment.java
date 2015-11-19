@@ -1,4 +1,4 @@
-package org.coursera.capstone.t1dteensclient.activities;
+package org.coursera.capstone.t1dteensclient.fragments;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -195,7 +195,7 @@ public class PreferencesFragment extends PreferenceFragment
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-        // if user data changet sets the flag to update user data on server
+        // if userType data changet sets the flag to update userType data on server
         if (key.contains("currentUser")) userDetailsChanged = true;
         // updates preference's summary
         updatePrefSummary(findPreference(key));

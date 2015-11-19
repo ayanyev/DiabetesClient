@@ -1,4 +1,4 @@
-package org.coursera.capstone.t1dteensclient.activities;
+package org.coursera.capstone.t1dteensclient.fragments;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -82,7 +82,7 @@ public class AddSubscriptionFragment extends GenericLoaderFragment {
                 mAdapter.changeData(result.getUsers());
             }
             else {
-                msgView.setText("Currently there is no user to add\nSwipe down to refresh");
+                msgView.setText("Currently there is no userType to add\nSwipe down to refresh");
                 msgLayout.setVisibility(View.VISIBLE);
             }
         }
@@ -114,10 +114,10 @@ public class AddSubscriptionFragment extends GenericLoaderFragment {
 
                 RequestResult result = mController.getAllUsers(UserType.TEEN);
                 users = result.getUsers();
-                // adds current user id to eviction list
+                // adds current userType id to eviction list
                 ids.add(Utils.getCurrentUserId(context));
 
-                // finds all distinct subscription (user) ids
+                // finds all distinct subscription (userType) ids
                 cursor = context.getContentResolver().query(RELATIONS_DATA_URI_DISTINCT,
                         new String[]{"subscription"},
                         null,

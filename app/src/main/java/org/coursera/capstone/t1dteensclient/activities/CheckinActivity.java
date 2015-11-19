@@ -3,10 +3,8 @@ package org.coursera.capstone.t1dteensclient.activities;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,6 +14,7 @@ import org.coursera.capstone.t1dteensclient.Utils;
 import org.coursera.capstone.t1dteensclient.common.LifecycleLoggingActivity;
 import org.coursera.capstone.t1dteensclient.entities.CheckIn;
 import org.coursera.capstone.t1dteensclient.entities.enums.CheckInStatus;
+import org.coursera.capstone.t1dteensclient.fragments.CheckinFragment;
 import org.coursera.capstone.t1dteensclient.receivers.AlarmReceiver;
 
 import static org.coursera.capstone.t1dteensclient.Constants.*;
@@ -90,7 +89,7 @@ public class CheckinActivity extends LifecycleLoggingActivity {
 
             AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             alarmMgr.set(AlarmManager.RTC_WAKEUP,
-                    System.currentTimeMillis() + 30 * 1000, //DELAY_INTERVAL,
+                    System.currentTimeMillis() + 10 * 1000, //DELAY_INTERVAL,
                     alarmIntent);
             finish();
             return;

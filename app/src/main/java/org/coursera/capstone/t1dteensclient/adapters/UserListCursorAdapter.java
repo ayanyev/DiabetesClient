@@ -12,6 +12,8 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import org.coursera.capstone.t1dteensclient.R;
+import org.coursera.capstone.t1dteensclient.activities.MainActivity;
+import org.coursera.capstone.t1dteensclient.common.GenericLoaderFragment;
 import org.coursera.capstone.t1dteensclient.controllers.SvcController;
 import org.coursera.capstone.t1dteensclient.entities.Relation;
 import org.coursera.capstone.t1dteensclient.entities.User;
@@ -24,19 +26,23 @@ public class UserListCursorAdapter extends CursorAdapter {
 
     final String TAG = getClass().getSimpleName();
     SvcController mController;
-    String fragInUse;
+    ViewHolder holder;
 
     public UserListCursorAdapter(Context context, Cursor c, boolean autoRequery) {
         super(context, c, autoRequery);
         mController = new SvcController(context);
-        this.fragInUse = fragInUse;
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return holder.user;
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
 
         View view = LayoutInflater.from(context).inflate(R.layout.list_item_user, parent, false);
-        ViewHolder holder = new ViewHolder();
+        holder = new ViewHolder();
 
         holder.fullName = (TextView) view.findViewById(R.id.userListItem_fullName);
         holder.type = (TextView) view.findViewById(R.id.userListItem_type);
@@ -56,7 +62,7 @@ public class UserListCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-        ViewHolder holder = (ViewHolder) view.getTag();
+        holder = (ViewHolder) view.getTag();
 
         Relation relation = (new Relation()).fromCursorToPOJO(cursor, -1);
 
@@ -109,13 +115,24 @@ public class UserListCursorAdapter extends CursorAdapter {
 
                 Log.d(TAG, "Relation successfully updated");
                 notifyDataSetChanged();
+
+                if (mRelation.getStatus() == RelationStatus.CONFIRMED) {
+                    holder.followButton.setText(R.string.Unfollow);
+                    holder.followButton.setEnabled(true);
+                } else if (mRelation.getStatus() == RelationStatus.PENDING) {
+                    holder.followButton.setText(R.string.Pending);
+                    holder.followButton.setEnabled(false);
+                } else if (mRelation.getStatus() == RelationStatus.REJECTED) {
+                    holder.followButton.setText(R.string.Rejected);
+                    holder.followButton.setEnabled(false);
+                }
             }
         }
     }
 
     private static class ViewHolder  {
 
-        User user;
+        User user = null;
         TextView fullName;
         TextView type;
         TextView checkins;

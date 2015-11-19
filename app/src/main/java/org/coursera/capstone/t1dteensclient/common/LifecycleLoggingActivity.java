@@ -136,4 +136,8 @@ public abstract class LifecycleLoggingActivity extends AppCompatActivity {
 		dialog.show(getSupportFragmentManager(), "timePicker");
 	}
 
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+	}
 }
